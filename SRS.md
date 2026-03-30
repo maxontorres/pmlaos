@@ -1,7 +1,7 @@
 # Software Requirements Specification (SRS)
 ## PM Real Estate — ອະສັງຫາລິມະຊັບ
 **Version:** 1.0  
-**Date:** 2026  
+**Date:** 2025  
 **Location:** Vientiane, Laos  
 **Stack:** Next.js 14 · PostgreSQL · Prisma · Cloudinary · Vercel
 
@@ -68,12 +68,12 @@ Locale is determined by the URL prefix: `/lo/...` and `/en/...`.
 |----|-------------|----------|-------|
 | FR-01 | Homepage with hero banner, featured listings section, and contact CTA | High | Featured listings = `featured: true` in DB |
 | FR-02 | Listing index page with filter bar | High | Filters: type, price range, bedrooms, district |
-| FR-03 | Listing detail page | High | Photos, description, specs, map pin, inquiry form |
+| FR-03 | Listing detail page | High | Photos, description, specs, district name, inquiry form. **No map or exact address shown publicly.** |
 | FR-04 | Inquiry / contact form on each listing | High | Fields: name, phone, message |
 | FR-05 | WhatsApp click-to-contact button on listing detail | High | `wa.me` link pre-filled with listing title |
 | FR-06 | Phone number click-to-call button on listing detail | High | `tel:` link |
 | FR-07 | About Us page | Medium | Agency story, values, team photo |
-| FR-08 | Contact page | Medium | Office address, phone, WhatsApp, Facebook, embedded map |
+| FR-08 | Contact page | Medium | Office address, phone, WhatsApp, Facebook, embedded map of **PM office only** |
 | FR-09 | Language switcher in navbar (EN / LO) | High | Swaps locale segment in current URL — preserves page |
 | FR-10 | Mobile-responsive layout | High | Primary audience is on mobile |
 | FR-11 | SEO meta tags per listing | High | Locale-aware title, description, OG image |
@@ -97,9 +97,9 @@ All filters must update the URL query string so the filtered view is shareable/b
 
 1. Photo gallery — swipeable on mobile, supports up to 20 images
 2. Title (locale-aware) + listing type badge + status badge
-3. Key specs: price, bedrooms, bathrooms, area (sqm), district
+3. Key specs: price, bedrooms, bathrooms, area (sqm), district name only
 4. Full description (locale-aware)
-5. Map pin (Google Maps embed) — shown if `lat` and `lng` are set; otherwise shows district name
+5. **No map pin, no exact address, no street name** — district name is the most specific location shown publicly
 6. Inquiry form (FR-04)
 7. WhatsApp + phone buttons (FR-05, FR-06)
 
@@ -123,6 +123,14 @@ The admin panel is accessible at `/admin` and is **not** locale-prefixed. It is 
 | FR-24 | Inquiries list | High | All submissions grouped by listing |
 | FR-25 | Mark inquiry as read | Medium | Visual indicator for unread inquiries |
 | FR-26 | Logout | High | Destroys session cookie |
+| FR-27 | Client list page | High | Table of all clients with name, phone, number of linked listings |
+| FR-28 | Create client | High | Fields: name, phone, notes — manually added by PM staff only |
+| FR-29 | Edit / delete client | High | Update contact info or notes; confirm dialog for delete |
+| FR-30 | Link client to listings | High | Assign one or more listings to a client via dropdown |
+| FR-31 | Deal status per client–listing | High | Status per link: `INTERESTED`, `NEGOTIATING`, `CLOSED` — updatable inline on client detail page |
+| FR-32 | Coordinate picker on listing form | High | Small embedded Google Map on create/edit form — admin clicks to set `lat`/`lng` instead of typing raw numbers |
+| FR-33 | Map preview on listing edit page | Medium | Once `lat`/`lng` are set, display a small read-only map pin preview so staff can confirm the location is correct |
+| FR-34 | Search and filter in admin listings table | High | Filter by type, status, district; keyword search by title — essential for navigating 100+ listings |
 
 ---
 
@@ -175,10 +183,10 @@ The admin panel is accessible at `/admin` and is **not** locale-prefixed. It is 
 | `bedrooms` | Integer | No | Not applicable for land |
 | `bathrooms` | Integer | No | Not applicable for land |
 | `areaSqm` | Float | No | Total area in square metres |
-| `district` | String | Yes | Vientiane district name |
-| `address` | String | No | Street address or landmark |
-| `lat` | Float | No | Latitude for map pin |
-| `lng` | Float | No | Longitude for map pin |
+| `district` | String | Yes | Vientiane district name — shown publicly |
+| `address` | String | No | Exact street address — **stored in DB, never exposed on public site** |
+| `lat` | Float | No | Latitude — **stored in DB, never exposed on public site** |
+| `lng` | Float | No | Longitude — **stored in DB, never exposed on public site** |
 | `images` | String[] | Yes | Array of Cloudinary URLs; minimum 1 |
 | `featured` | Boolean | Yes | Default `false` — shown on homepage if `true` |
 | `createdAt` | DateTime | Auto | |
@@ -196,6 +204,28 @@ The admin panel is accessible at `/admin` and is **not** locale-prefixed. It is 
 | `read` | Boolean | Yes | Default `false` |
 | `createdAt` | DateTime | Auto | |
 
+### 7.3 Client
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `id` | Integer | Auto | Primary key |
+| `name` | String | Yes | Client full name |
+| `phone` | String | Yes | Contact phone number |
+| `notes` | Text | No | Internal notes by PM staff |
+| `createdAt` | DateTime | Auto | |
+| `updatedAt` | DateTime | Auto | |
+
+### 7.4 ClientListing _(join table)_
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `id` | Integer | Auto | Primary key |
+| `clientId` | Integer | Yes | FK → Client |
+| `listingId` | Integer | Yes | FK → Listing |
+| `status` | Enum | Yes | `INTERESTED`, `NEGOTIATING`, `CLOSED` — default `INTERESTED` |
+| `createdAt` | DateTime | Auto | |
+| `updatedAt` | DateTime | Auto | |
+
 ---
 
 ## 8. External Integrations
@@ -205,7 +235,7 @@ The admin panel is accessible at `/admin` and is **not** locale-prefixed. It is 
 | **Supabase** | Hosted PostgreSQL database | Free |
 | **Cloudinary** | Image hosting, resizing, and optimization | Free (25 credits/month) |
 | **Vercel** | Hosting and CI/CD | Free |
-| **Google Maps Embed API** | Map pin on listing detail pages | Free (embed API has no billing) |
+| **Google Maps Embed API** | (1) Office location on public Contact page (2) Coordinate picker and pin preview in admin listing form | Free (embed API has no billing) |
 | **WhatsApp** | Click-to-contact via `wa.me` deep link | Free |
 | **Resend** _(optional)_ | Email notification to PM staff on new inquiry | Free (50 emails/day) |
 
@@ -224,6 +254,7 @@ The following features are explicitly excluded from v1 to keep scope manageable.
 - Property comparison feature
 - Push / SMS notifications
 - Native mobile app
+- Admin map view showing all listings as pins with type filters (v2 — table + search covers v1 navigation needs)
 
 ---
 
@@ -232,6 +263,7 @@ The following features are explicitly excluded from v1 to keep scope manageable.
 - The agency has **one admin user** — no multi-user or role system is needed for v1.
 - All properties are located within **Vientiane** — no other cities in v1.
 - The website domain is `PMLaos.com`.
+- **Property location privacy:** Exact addresses, coordinates, and map pins are never shown on the public site. Only the district name is visible. This protects the broker relationship between PM Real Estate and property owners.
 - PM staff will enter listing content in both Lao and English. No automatic translation.
 - Property photos will be supplied by PM staff at listing creation time.
 - No existing database to migrate from — the Facebook page is the current system.
