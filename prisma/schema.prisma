@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  admin
+  agent
+}
+
+enum PropertyType {
+  land
+  house
+  rental
+}
+
+enum ListingStatus {
+  available
+  sold
+  rented
+  hidden
+}
+
+enum PriceUnit {
+  total
+  per_month
+}
+
+enum ClientStatus {
+  new
+  active
+  closed
+  lost
+}
+
+enum InterestType {
+  land
+  house
+  rental
+  any
+}
+
+enum ClientSource {
+  website
+  referral
+  direct
+  other
+}
+
+enum InquiryStatus {
+  new
+  contacted
+  converted
+  closed
+}
+
+enum ClientLanguage {
+  en
+  lo
+  zh
+  other
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(agent)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  clients   Client[]
+}
+
+model Listing {
+  id             String          @id @default(uuid())
+  slug           String          @unique
+  type           PropertyType
+  status         ListingStatus   @default(available)
+  featured       Boolean         @default(false)
+  titleEn        String
+  titleLo        String
+  titleZh        String
+  descriptionEn  String          @db.Text
+  descriptionLo  String          @db.Text
+  descriptionZh  String          @db.Text
+  locationEn     String
+  locationLo     String
+  locationZh     String
+  price          Decimal         @db.Decimal(12, 2)
+  priceUnit      PriceUnit       @default(total)
+  areaSqm        Decimal?        @db.Decimal(10, 2)
+  lat            Decimal?        @db.Decimal(10, 7)
+  lng            Decimal?        @db.Decimal(10, 7)
+  photos         Photo[]
+  inquiries      Inquiry[]
+  clientListings ClientListing[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Photo {
+  id        String   @id @default(uuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  url       String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Client {
+  id            String         @id @default(uuid())
+  name          String
+  phone         String
+  email         String?
+  language      ClientLanguage @default(en)
+  interestType  InterestType   @default(any)
+  budgetMin     Decimal?       @db.Decimal(12, 2)
+  budgetMax     Decimal?       @db.Decimal(12, 2)
+  notes         String?        @db.Text
+  status        ClientStatus   @default(new)
+  source        ClientSource   @default(direct)
+  lastContactAt DateTime?
+  assignedTo    String?
+  agent         User?          @relation(fields: [assignedTo], references: [id])
+  listings      ClientListing[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model ClientListing {
+  clientId  String
+  listingId String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([clientId, listingId])
+}
+
+model Inquiry {
+  id        String        @id @default(uuid())
+  name      String
+  phone     String
+  message   String        @db.Text
+  listingId String?
+  listing   Listing?      @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  status    InquiryStatus @default(new)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
