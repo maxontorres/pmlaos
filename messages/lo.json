@@ -12,5 +12,11 @@
   "footer": {
     "tagline": "ອະສັງຫາລິມະຊັບ ວຽງຈັນ",
     "copy": "© 2025 PM Real Estate. ສະຫງວນລິຂະສິດ."
+  },
+"notFound": {
+    "title": "ໜ້າໄໝ່",
+    "description": "ໜ້າທີ່ເ່ົ້າໄປເບິ່້, ໄໝ່ ແໝ ແໜ່.",
+    "home": "ໄໝ",
+    "listings": "ເໝົ່າ"
   }
 }

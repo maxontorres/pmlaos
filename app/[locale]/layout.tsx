@@ -1,7 +1,6 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { Noto_Sans_Lao } from 'next/font/google'
-import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import Navbar from '@/app/components/Navbar'
 import Footer from '@/app/components/Footer'
@@ -21,10 +20,6 @@ export default async function LocaleLayout(props: {
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await props.params
-
-  if (!routing.locales.includes(locale as (typeof routing.locales)[number])) {
-    notFound()
-  }
 
   setRequestLocale(locale)
 

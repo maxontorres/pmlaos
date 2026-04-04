@@ -1,0 +1,17 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  background: #25D366;
+  color: #fff;
+  border-radius: var(--radius);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+
+.button:hover {
+  background: #1ebe5d;
+}

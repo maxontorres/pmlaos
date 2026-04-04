@@ -7,10 +7,78 @@
   "home": {
     "title": "在万象寻找房产",
     "subtitle": "与 PM Real Estate 一起买房或租房",
-    "cta": "浏览房源"
+    "cta": "浏览房源",
+    "featured": "精选房源",
+    "browseAll": "浏览全部房源",
+    "typeTitle": "按房产类型浏览",
+    "typeLand": "土地",
+    "typeLandDesc": "黄金地段的地块和开发用地",
+    "typeHouse": "住宅",
+    "typeHouseDesc": "出售的住宅和别墅",
+    "typeRental": "出租",
+    "typeRentalDesc": "配套齐全的公寓和房屋出租",
+    "ctaBanner": "准备好寻找您的房产了吗？",
+    "ctaContact": "立即联系"
+  },
+  "listings": {
+    "pageTitle": "房源列表",
+    "filterAll": "全部",
+    "filterLand": "土地",
+    "filterHouse": "住宅",
+    "filterRental": "出租",
+    "noResults": "没有找到符合此筛选条件的房源。"
+  },
+  "listing": {
+    "typeLand": "土地",
+    "typeHouse": "住宅",
+    "typeRental": "出租",
+    "area": "面积",
+    "sqm": "平方米",
+    "perMonth": "/ 月",
+    "location": "位置",
+    "description": "关于此房产",
+    "inquire": "对这套房产感兴趣?",
+    "whatsapp": "WhatsApp 联系",
+    "approxLocation": "地图仅显示大致位置。",
+    "backToListings": "← 全部房源",
+    "mapPlaceholder": "互动地图即将上线"
+  },
+  "about": {
+    "title": "关于 PM Real Estate",
+    "subtitle": "万象值得信赖的房产中介",
+    "introP1": "PM Real Estate 自 2015 年起，在万象为买家、卖家和租客提供专业的房产服务。我们专注于住宅销售、商业用地及长期租赁业务。",
+    "introP2": "我们的双语团队精通老挝语、英语和中文，全程陪同国际客户和本地家庭完成每一个购房环节。",
+    "whyTitle": "为什么选择我们",
+    "why1Title": "本地专业知识",
+    "why1Desc": "深入了解万象每个街区的情况、价格趋势和土地法规。",
+    "why2Title": "完全透明",
+    "why2Desc": "费用清晰，估价公正，无隐性费用。我们为您服务。",
+    "why3Title": "三语服务",
+    "why3Desc": "全程提供老挝语、英语和中文支持。",
+    "teamTitle": "我们的团队"
+  },
+  "contact": {
+    "title": "联系我们",
+    "intro": "有疑问或想预约看房？请联系我们，我们的团队将在一个工作日内回复。",
+    "officeTitle": "我们的办公室",
+    "officeAddress": "苏法努旺大道 12 号\n占塔布里区\n万象，老挝人民民主共和国",
+    "whatsappLabel": "WhatsApp",
+    "form": {
+      "name": "全名",
+      "phone": "电话 / WhatsApp",
+      "message": "留言",
+      "submit": "发送消息",
+      "success": "感谢您！我们将尽快与您联系。"
+    }
   },
   "footer": {
     "tagline": "老挝万象房产列表",
     "copy": "© 2025 PM Real Estate. 保留所有权利。"
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "description": "您访问的页面不存在或已被移动。",
+    "home": "返回首页",
+    "listings": "浏览房源"
   }
 }

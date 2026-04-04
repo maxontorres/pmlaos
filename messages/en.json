@@ -7,10 +7,78 @@
   "home": {
     "title": "Find Property in Vientiane",
     "subtitle": "Buy or rent with PM Real Estate",
-    "cta": "Browse Listings"
+    "cta": "Browse Listings",
+    "featured": "Featured Listings",
+    "browseAll": "Browse All Listings",
+    "typeTitle": "Browse by Property Type",
+    "typeLand": "Land",
+    "typeLandDesc": "Plots and development land in prime locations",
+    "typeHouse": "House",
+    "typeHouseDesc": "Homes and villas for sale",
+    "typeRental": "Rental",
+    "typeRentalDesc": "Furnished apartments and houses for rent",
+    "ctaBanner": "Ready to find your property?",
+    "ctaContact": "Get in Touch"
+  },
+  "listings": {
+    "pageTitle": "Property Listings",
+    "filterAll": "All",
+    "filterLand": "Land",
+    "filterHouse": "House",
+    "filterRental": "Rental",
+    "noResults": "No listings found for this filter."
+  },
+  "listing": {
+    "typeLand": "Land",
+    "typeHouse": "House",
+    "typeRental": "Rental",
+    "area": "Area",
+    "sqm": "sqm",
+    "perMonth": "/ month",
+    "location": "Location",
+    "description": "About this property",
+    "inquire": "Interested in this property?",
+    "whatsapp": "WhatsApp Us",
+    "approxLocation": "Map shows approximate location only.",
+    "backToListings": "← All Listings",
+    "mapPlaceholder": "Interactive map coming soon"
+  },
+  "about": {
+    "title": "About PM Real Estate",
+    "subtitle": "Vientiane's trusted property agency",
+    "introP1": "PM Real Estate has been connecting buyers, sellers, and tenants with the right properties in Vientiane since 2015. We specialise in residential sales, commercial land, and long-term rentals across all major districts of the Lao capital.",
+    "introP2": "Our bilingual team — fluent in Lao, English, and Mandarin — guides international clients and local families through every step of the property journey, from first viewing to title deed transfer.",
+    "whyTitle": "Why Choose Us",
+    "why1Title": "Local Expertise",
+    "why1Desc": "Deep knowledge of every Vientiane neighbourhood, pricing trends, and land title regulations.",
+    "why2Title": "Full Transparency",
+    "why2Desc": "Clear fees, honest valuations, and no hidden costs. We work for you, not the commission.",
+    "why3Title": "Trilingual Service",
+    "why3Desc": "Fluent support in Lao, English, and Mandarin throughout the entire process.",
+    "teamTitle": "Our Team"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "intro": "Have a question or want to arrange a viewing? Reach out and our team will be in touch within one business day.",
+    "officeTitle": "Our Office",
+    "officeAddress": "Unit 12, Souphanouvong Avenue\nChanthabouly District\nVientiane, Laos PDR",
+    "whatsappLabel": "WhatsApp",
+    "form": {
+      "name": "Full Name",
+      "phone": "Phone / WhatsApp",
+      "message": "Message",
+      "submit": "Send Message",
+      "success": "Thank you! We'll be in touch shortly."
+    }
   },
   "footer": {
     "tagline": "Property listings in Vientiane, Laos",
     "copy": "© 2025 PM Real Estate. All rights reserved."
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "home": "Back to Home",
+    "listings": "Browse Listings"
   }
 }

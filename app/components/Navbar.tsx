@@ -17,15 +17,26 @@ const links = {
     { href: 'about',    label: 'About' },
     { href: 'contact',  label: 'Contact' },
   ],
+  zh: [
+    { href: 'listings', label: '房源' },
+    { href: 'about',    label: '关于' },
+    { href: 'contact',  label: '联系' },
+  ],
+}
+
+const nextLocaleMap: Record<string, { locale: string; label: string }> = {
+  en: { locale: 'lo', label: 'ລາວ' },
+  lo: { locale: 'zh', label: '中文' },
+  zh: { locale: 'en', label: 'EN' },
 }
 
 export default function Navbar({ locale }: Props) {
   const navLinks = links[locale as keyof typeof links] ?? links.en
-  const otherLocale = locale === 'lo' ? 'en' : 'lo'
-  const otherLabel  = locale === 'lo' ? 'EN' : 'ລາວ'
-  const logoSrc     = locale === 'lo'
-    ? '/img/pmlaos-logo-lao.png'
-    : '/img/pmlaos-logo-english.png'
+  const next = nextLocaleMap[locale] ?? nextLocaleMap.en
+  const logoSrc =
+    locale === 'lo'
+      ? '/img/pmlaos-logo-lao.png'
+      : '/img/pmlaos-logo-english.png'
 
   return (
     <header className={styles.header}>
@@ -44,8 +55,8 @@ export default function Navbar({ locale }: Props) {
           ))}
         </ul>
 
-        <Link href={`/${otherLocale}`} className={styles.langSwitch}>
-          {otherLabel}
+        <Link href={`/${next.locale}`} className={styles.langSwitch}>
+          {next.label}
         </Link>
       </nav>
     </header>
