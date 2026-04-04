@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "listings": "房源列表",
+    "about": "关于我们",
+    "contact": "联系我们"
+  },
+  "home": {
+    "title": "在万象寻找房产",
+    "subtitle": "与 PM Real Estate 一起买房或租房",
+    "cta": "浏览房源"
+  },
+  "footer": {
+    "tagline": "老挝万象房产列表",
+    "copy": "© 2025 PM Real Estate. 保留所有权利。"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "listings": "Listings",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "home": {
+    "title": "Find Property in Vientiane",
+    "subtitle": "Buy or rent with PM Real Estate",
+    "cta": "Browse Listings"
+  },
+  "footer": {
+    "tagline": "Property listings in Vientiane, Laos",
+    "copy": "© 2025 PM Real Estate. All rights reserved."
+  }
+}
