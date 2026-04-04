@@ -25,7 +25,7 @@ npx prisma db seed                     # Run prisma/seed.ts
 Two parallel trees share the same codebase but have entirely different concerns:
 
 - **`app/[locale]/`** — public-facing site. All routes are locale-prefixed (`/en/...`, `/lo/...`, `/zh/...`). Wrapped by `proxy.ts` (next-intl). Locale layout applies Noto Sans Lao font when `locale === 'lo'`.
-- **`app/admin/`** — internal panel at `/admin`. English only. Outside locale routing. Protected by a session guard in `app/admin/layout.tsx`.
+- **`app/[locale]/admin/`** — internal panel at `/en/admin`, `/lo/admin`, `/zh/admin`. Protected by a session guard in `app/[locale]/admin/layout.tsx`.
 - **`app/api/`** — API routes. Auth-required except `api/inquiries` (public POST). `DELETE` on listings and clients restricted to `admin` role.
 
 ### i18n

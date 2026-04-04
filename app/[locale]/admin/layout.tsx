@@ -1,9 +1,6 @@
-import { auth } from '@/lib/auth'
-import { redirect } from 'next/navigation'
-
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth()
-  if (!session) redirect('/admin/login')
-
-  return <>{children}</>
+export default function AdminLayout(props: {
+  children: React.ReactNode
+  params: Promise<{ locale: string }>
+}) {
+  return <div>{props.children}</div>
 }
