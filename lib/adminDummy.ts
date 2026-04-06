@@ -25,6 +25,17 @@ export interface AdminSystemUser {
   status: 'active' | 'inactive'
 }
 
+export interface AdminDeal {
+  id: string
+  clientName: string
+  listingTitle: string
+  dealValue: number
+  currency: string
+  commission: number
+  closedAt: string
+  transactionType: 'sale' | 'rent'
+}
+
 export const adminUser: AdminUser = {
   name: 'PM Employee',
   role: 'Listings and Clients',
@@ -164,4 +175,74 @@ export function getUserStats() {
   const admins = adminSystemUsers.filter((user) => user.role === 'admin').length
 
   return { all, active, admins }
+}
+
+export const adminDeals: AdminDeal[] = [
+  {
+    id: 'd1',
+    clientName: 'Somsack Phommasak',
+    listingTitle: 'Modern House in Saysettha',
+    dealValue: 85000,
+    currency: 'USD',
+    commission: 4250,
+    closedAt: '2026-04-03',
+    transactionType: 'sale',
+  },
+  {
+    id: 'd2',
+    clientName: 'Khamphone Sivilay',
+    listingTitle: 'Downtown Studio Apartment',
+    dealValue: 450,
+    currency: 'USD',
+    commission: 225,
+    closedAt: '2026-03-28',
+    transactionType: 'rent',
+  },
+  {
+    id: 'd3',
+    clientName: 'Bounmy Khammany',
+    listingTitle: 'Land Plot near Airport',
+    dealValue: 120000,
+    currency: 'USD',
+    commission: 6000,
+    closedAt: '2026-03-15',
+    transactionType: 'sale',
+  },
+  {
+    id: 'd4',
+    clientName: 'Soulivong Darasack',
+    listingTitle: 'Family House with Pool',
+    dealValue: 145000,
+    currency: 'USD',
+    commission: 7250,
+    closedAt: '2026-02-20',
+    transactionType: 'sale',
+  },
+  {
+    id: 'd5',
+    clientName: 'Sithong Phommachak',
+    listingTitle: 'Luxury Condo Center',
+    dealValue: 650,
+    currency: 'USD',
+    commission: 325,
+    closedAt: '2026-02-10',
+    transactionType: 'rent',
+  },
+]
+
+export function getDealStats() {
+  const totalCommission = adminDeals.reduce((sum, deal) => sum + deal.commission, 0)
+  const thisMonth = adminDeals.filter((deal) => {
+    const closed = new Date(deal.closedAt)
+    const now = new Date()
+    return closed.getMonth() === now.getMonth() && closed.getFullYear() === now.getFullYear()
+  }).length
+  const unitsSold = adminDeals.filter((deal) => deal.transactionType === 'sale').length
+  const unitsRented = adminDeals.filter((deal) => deal.transactionType === 'rent').length
+
+  return { totalCommission, thisMonth, unitsSold, unitsRented }
+}
+
+export function getDashboardDeals(): AdminDeal[] {
+  return adminDeals.slice(0, 5)
 }
