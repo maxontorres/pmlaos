@@ -1,6 +1,5 @@
-export default function AdminLayout(props: {
-  children: React.ReactNode
-  params: Promise<{ locale: string }>
-}) {
-  return <div>{props.children}</div>
+import { redirect } from 'next/navigation'
+
+export default async function LegacyLocaleAdminLayout() {
+  redirect('/admin')
 }

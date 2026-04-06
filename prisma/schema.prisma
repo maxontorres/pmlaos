@@ -12,10 +12,15 @@ enum Role {
   agent
 }
 
-enum PropertyType {
-  land
+enum PropertyCategory {
   house
-  rental
+  apartment
+  land
+}
+
+enum TransactionType {
+  sale
+  rent
 }
 
 enum ListingStatus {
@@ -38,10 +43,12 @@ enum ClientStatus {
 }
 
 enum InterestType {
-  land
-  house
-  rental
   any
+  house_rent
+  apartment_rent
+  house_sale
+  apartment_sale
+  land_sale
 }
 
 enum ClientSource {
@@ -80,7 +87,8 @@ model User {
 model Listing {
   id             String          @id @default(uuid())
   slug           String          @unique
-  type           PropertyType
+  category       PropertyCategory
+  transaction    TransactionType
   status         ListingStatus   @default(available)
   featured       Boolean         @default(false)
   titleEn        String
@@ -95,11 +103,16 @@ model Listing {
   price          Decimal         @db.Decimal(12, 2)
   priceUnit      PriceUnit       @default(total)
   areaSqm        Decimal?        @db.Decimal(10, 2)
+  bedrooms       Int?
+  bathrooms      Int?
+  parkingSpaces  Int?
+  amenities      String[]        @default([])
   lat            Decimal?        @db.Decimal(10, 7)
   lng            Decimal?        @db.Decimal(10, 7)
   photos         Photo[]
   inquiries      Inquiry[]
   clientListings ClientListing[]
+  deals          Deal[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 }
@@ -129,6 +142,7 @@ model Client {
   assignedTo    String?
   agent         User?          @relation(fields: [assignedTo], references: [id])
   listings      ClientListing[]
+  deals         Deal[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -153,4 +167,20 @@ model Inquiry {
   status    InquiryStatus @default(new)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+}
+
+model Deal {
+  id            String   @id @default(cuid())
+  clientId      String
+  client        Client   @relation(fields: [clientId], references: [id])
+  listingId     String
+  listing       Listing  @relation(fields: [listingId], references: [id])
+  dealValue     Float
+  commission    Float
+  currency      String   @default("USD")
+  commissionUsd Float
+  closedAt      DateTime
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

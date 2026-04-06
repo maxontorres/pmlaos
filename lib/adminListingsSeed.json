@@ -1,0 +1,85 @@
+[
+  {
+    "id": "seed-riverside-villa",
+    "slug": "seed-riverside-villa",
+    "titleEn": "Riverside Villa Demo",
+    "locationEn": "Chanthabouly, Vientiane",
+    "category": "house",
+    "transaction": "sale",
+    "status": "available",
+    "featured": true,
+    "price": 485000,
+    "priceUnit": "total",
+    "descriptionEn": "A preview villa listing with a pool, garden, and bright open-plan living spaces.",
+    "areaSqm": 320,
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "parkingSpaces": 1,
+    "lat": 17.9651,
+    "lng": 102.6074,
+    "photos": [
+      {
+        "url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80",
+        "order": 0
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80",
+        "order": 1
+      }
+    ]
+  },
+  {
+    "id": "seed-city-apartment",
+    "slug": "seed-city-apartment",
+    "titleEn": "City Apartment Demo",
+    "locationEn": "Xaysetha, Vientiane",
+    "category": "apartment",
+    "transaction": "rent",
+    "status": "available",
+    "featured": false,
+    "price": 1200,
+    "priceUnit": "per_month",
+    "descriptionEn": "A furnished apartment preview with balcony, Wi-Fi, and a central location for expat rentals.",
+    "areaSqm": 86,
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "parkingSpaces": 1,
+    "lat": 17.9515,
+    "lng": 102.6321,
+    "photos": [
+      {
+        "url": "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1200&q=80",
+        "order": 0
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&q=80",
+        "order": 1
+      }
+    ]
+  },
+  {
+    "id": "seed-land-plot",
+    "slug": "seed-land-plot",
+    "titleEn": "Land Plot Demo",
+    "locationEn": "Sikhottabong, Vientiane",
+    "category": "land",
+    "transaction": "sale",
+    "status": "hidden",
+    "featured": false,
+    "price": 210000,
+    "priceUnit": "total",
+    "descriptionEn": "A hidden sample land listing for previewing different statuses and card combinations.",
+    "areaSqm": 950,
+    "bedrooms": null,
+    "bathrooms": null,
+    "parkingSpaces": null,
+    "lat": 17.9562,
+    "lng": 102.5809,
+    "photos": [
+      {
+        "url": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80",
+        "order": 0
+      }
+    ]
+  }
+]

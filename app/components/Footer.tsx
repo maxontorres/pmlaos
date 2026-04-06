@@ -42,6 +42,9 @@ export default function Footer({ locale }: Props) {
           ))}
         </ul>
         <p className={styles.copy}>{t.copy}</p>
+        <Link href={`/${locale}/admin/login`} className={styles.staffLink}>
+          Staff login
+        </Link>
       </div>
     </footer>
   )

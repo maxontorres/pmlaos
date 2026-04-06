@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import styles from './Navbar.module.css'
 
@@ -9,18 +8,18 @@ interface Props {
 const links = {
   lo: [
     { href: 'listings', label: 'ລາຍການ' },
-    { href: 'about',    label: 'ກ່ຽວກັບ' },
-    { href: 'contact',  label: 'ຕິດຕໍ່' },
+    { href: 'about', label: 'ກ່ຽວກັບ' },
+    { href: 'contact', label: 'ຕິດຕໍ່' },
   ],
   en: [
     { href: 'listings', label: 'Listings' },
-    { href: 'about',    label: 'About' },
-    { href: 'contact',  label: 'Contact' },
+    { href: 'about', label: 'About' },
+    { href: 'contact', label: 'Contact' },
   ],
   zh: [
     { href: 'listings', label: '房源' },
-    { href: 'about',    label: '关于' },
-    { href: 'contact',  label: '联系' },
+    { href: 'about', label: '关于' },
+    { href: 'contact', label: '联系' },
   ],
 }
 
@@ -33,16 +32,37 @@ const nextLocaleMap: Record<string, { locale: string; label: string }> = {
 export default function Navbar({ locale }: Props) {
   const navLinks = links[locale as keyof typeof links] ?? links.en
   const next = nextLocaleMap[locale] ?? nextLocaleMap.en
-  const logoSrc =
-    locale === 'lo'
-      ? '/img/pmlaos-logo-lao.png'
-      : '/img/pmlaos-logo-english.png'
 
   return (
     <header className={styles.header}>
       <nav className={styles.nav}>
         <Link href={`/${locale}`} className={styles.logo}>
-          <Image src={logoSrc} alt="PM Real Estate" width={48} height={48} />
+          <svg
+            className={styles.logoMark}
+            viewBox="0 0 38 44"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="PM Real Estate"
+            role="img"
+          >
+            <path
+              d="M19 2L4 8v14c0 10 6.5 18.4 15 20.8C28.5 40.4 35 32 35 22V8L19 2z"
+              fill="#132240"
+              stroke="#C9A84C"
+              strokeWidth="1.5"
+            />
+            <text
+              x="19"
+              y="22"
+              textAnchor="middle"
+              fontFamily="Cormorant Garamond, serif"
+              fontSize="14"
+              fontWeight="600"
+              fill="#C9A84C"
+            >
+              PM
+            </text>
+          </svg>
         </Link>
 
         <ul className={styles.links}>

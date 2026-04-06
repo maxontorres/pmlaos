@@ -41,3 +41,13 @@
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.8125rem;
 }
+
+.staffLink {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.2);
+  transition: color 0.15s;
+}
+
+.staffLink:hover {
+  color: rgba(255, 255, 255, 0.5);
+}

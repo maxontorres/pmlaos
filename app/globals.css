@@ -1,3 +1,5 @@
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
 /* ─── Design tokens ──────────────────────────────────────────── */
 :root {
   --color-primary:       #0D1B3E;
@@ -14,6 +16,18 @@
   --max-width:     1200px;
   --header-height: 64px;
   --radius:        6px;
+  --radius-lg:     12px;
+  --transition:    0.22s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ─── Base resets ────────────────────────────────────────────── */

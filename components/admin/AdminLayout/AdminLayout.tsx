@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 import styles from './layout.module.css'
 
 interface NavItem {
@@ -35,7 +35,6 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    label: 'Content',
     items: [
       {
         label: 'Listings',
@@ -46,23 +45,10 @@ const navSections: NavSection[] = [
             <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
         ),
-        badge: 12,
-      },
-      {
-        label: 'New Listing',
-        href: '/admin/listings/new',
-        icon: (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="16" />
-            <line x1="8" y1="12" x2="16" y2="12" />
-          </svg>
-        ),
       },
     ],
   },
   {
-    label: 'CRM',
     items: [
       {
         label: 'Clients',
@@ -75,49 +61,76 @@ const navSections: NavSection[] = [
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
         ),
-        badge: 8,
-      },
-      {
-        label: 'Inquiries',
-        href: '/admin/inquiries',
-        icon: (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-            <polyline points="22,6 12,13 2,6" />
-          </svg>
-        ),
-        badge: 3,
       },
     ],
   },
-  {
-    label: 'Settings',
-    items: [
-      {
-        label: 'Users',
-        href: '/admin/users',
-        icon: (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM6 8a6 6 0 1 1 12 0A6 6 0 0 1 6 8zM2 16c0-3.3 2.7-6 6-6s6 2.7 6 6v2H2v-2z" />
-          </svg>
-        ),
-      },
-    ],
-  },
+]
+
+const footerNavItem: NavItem = {
+  label: 'Users',
+  href: '/admin/users',
+  icon: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="8.5" cy="7" r="4" />
+      <path d="M20 8v6" />
+      <path d="M17 11h6" />
+    </svg>
+  ),
+}
+
+const mobileNavItems: NavItem[] = [
+  navSections[0].items[0],
+  navSections[1].items[0],
+  navSections[2].items[0],
+  footerNavItem,
 ]
 
 interface AdminLayoutProps {
   children: React.ReactNode
   user: {
     name: string
-    email: string
     role: string
   }
   pageTitle: string
+  pageDescription?: string
 }
 
-export default function AdminLayout({ children, user, pageTitle }: AdminLayoutProps) {
+export default function AdminLayout({ children, user, pageTitle, pageDescription }: AdminLayoutProps) {
   const pathname = usePathname()
+  const [isDesktop, setIsDesktop] = useState(false)
+  const [desktopSidebarExpanded, setDesktopSidebarExpanded] = useState(true)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+  const isActiveRoute = (href: string) => pathname === href || (href !== '/admin' && pathname.startsWith(href))
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 900px)')
+    const syncDesktop = (event?: MediaQueryList | MediaQueryListEvent) => {
+      const matches = 'matches' in (event ?? mediaQuery) ? (event ?? mediaQuery).matches : mediaQuery.matches
+      setIsDesktop(matches)
+      if (matches) {
+        setMobileSidebarOpen(false)
+      }
+    }
+
+    syncDesktop(mediaQuery)
+    mediaQuery.addEventListener('change', syncDesktop)
+
+    return () => {
+      mediaQuery.removeEventListener('change', syncDesktop)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!mobileSidebarOpen || isDesktop) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isDesktop, mobileSidebarOpen])
 
   const getInitials = (name: string) => {
     return name
@@ -128,12 +141,53 @@ export default function AdminLayout({ children, user, pageTitle }: AdminLayoutPr
       .slice(0, 2)
   }
 
+  const closeMobileSidebar = () => {
+    if (!isDesktop) setMobileSidebarOpen(false)
+  }
+
+  const sidebarVisible = isDesktop ? true : mobileSidebarOpen
+
   return (
-    <div className={styles.layout}>
-      <aside className={styles.sidebar}>
+    <div
+      className={[
+        styles.layout,
+        isDesktop && desktopSidebarExpanded ? styles.layoutWithSidebar : '',
+        isDesktop && !desktopSidebarExpanded ? styles.layoutWithCollapsedSidebar : '',
+        isDesktop && !desktopSidebarExpanded ? styles.desktopSidebarCollapsed : '',
+      ].filter(Boolean).join(' ')}
+    >
+      {!isDesktop && mobileSidebarOpen ? (
+        <button
+          type="button"
+          className={styles.sidebarBackdrop}
+          aria-label="Close sidebar"
+          onClick={closeMobileSidebar}
+        />
+      ) : null}
+
+      <aside className={`${styles.sidebar} ${sidebarVisible ? styles.sidebarOpen : ''}`}>
         <div className={styles.logo}>
-          <p className={styles.logoText}>PM Real Estate</p>
-          <p className={styles.logoSub}>Admin Panel</p>
+          <div className={styles.logoCopy}>
+            <p className={styles.logoText}>PM Real Estate</p>
+            <p className={styles.logoSub}>Admin Panel</p>
+          </div>
+          <button
+            type="button"
+            className={styles.sidebarToggleButton}
+            aria-label={desktopSidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+            aria-expanded={desktopSidebarExpanded}
+            onClick={() => setDesktopSidebarExpanded((current) => !current)}
+          >
+            {desktopSidebarExpanded ? (
+              <span className={styles.closeIcon}>×</span>
+            ) : (
+              <span className={styles.menuIcon}>
+                <span />
+                <span />
+                <span />
+              </span>
+            )}
+          </button>
         </div>
 
         <nav className={styles.nav}>
@@ -141,15 +195,16 @@ export default function AdminLayout({ children, user, pageTitle }: AdminLayoutPr
             <div key={idx} className={styles.navSection}>
               {section.label && <p className={styles.navLabel}>{section.label}</p>}
               {section.items.map((item) => {
-                const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
+                const isActive = isActiveRoute(item.href)
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     className={`${styles.navLink} ${isActive ? styles.active : ''}`}
+                    onClick={closeMobileSidebar}
                   >
                     <span className={styles.navIcon}>{item.icon}</span>
-                    {item.label}
+                    <span className={styles.navText}>{item.label}</span>
                     {item.badge !== undefined && <span className={styles.badge}>{item.badge}</span>}
                   </Link>
                 )
@@ -159,6 +214,14 @@ export default function AdminLayout({ children, user, pageTitle }: AdminLayoutPr
         </nav>
 
         <div className={styles.footer}>
+          <Link
+            href={footerNavItem.href}
+            className={`${styles.navLink} ${styles.footerNavLink} ${isActiveRoute(footerNavItem.href) ? styles.active : ''}`}
+            onClick={closeMobileSidebar}
+          >
+            <span className={styles.navIcon}>{footerNavItem.icon}</span>
+            <span className={styles.navText}>{footerNavItem.label}</span>
+          </Link>
           <div className={styles.userInfo}>
             <div className={styles.avatar}>{getInitials(user.name)}</div>
             <div className={styles.userDetails}>
@@ -166,32 +229,33 @@ export default function AdminLayout({ children, user, pageTitle }: AdminLayoutPr
               <p className={styles.userRole}>{user.role}</p>
             </div>
           </div>
-          <button
-            className={styles.signOutBtn}
-            onClick={() => signOut({ callbackUrl: '/admin/login' })}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            Sign out
-          </button>
+          <p className={styles.footerNote}>Internal admin workspace.</p>
         </div>
       </aside>
 
       <div className={styles.main}>
         <header className={styles.header}>
-          <h1 className={styles.headerTitle}>{pageTitle}</h1>
-          <div className={styles.breadcrumb}>
-            <Link href="/admin" className={styles.breadcrumbLink}>Admin</Link>
-            <span className={styles.breadcrumbSep}>/</span>
-            <span>{pageTitle}</span>
+          <div>
+            <h1 className={styles.headerTitle}>{pageTitle}</h1>
+            {pageDescription ? <p className={styles.headerDescription}>{pageDescription}</p> : null}
           </div>
         </header>
         <div className={styles.content}>
           {children}
         </div>
+        <nav className={styles.mobileBottomNav} aria-label="Admin mobile navigation">
+          {mobileNavItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`${styles.mobileBottomLink} ${isActiveRoute(item.href) ? styles.mobileBottomLinkActive : ''}`}
+              onClick={closeMobileSidebar}
+            >
+              <span className={styles.mobileBottomIcon}>{item.icon}</span>
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </nav>
       </div>
     </div>
   )
