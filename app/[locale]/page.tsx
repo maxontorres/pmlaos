@@ -73,20 +73,8 @@ export default async function HomePage({ params }: HomePageProps) {
             </Link>
           </div>
 
-          <div className={styles.heroStats}>
-            <div className={styles.heroStat}>
-              <span className={styles.heroStatNum}>{t('home.stat1Num')}</span>
-              <span className={styles.heroStatLabel}>{t('home.stat1Label')}</span>
-            </div>
-            <div className={styles.heroStat}>
-              <span className={styles.heroStatNum}>{t('home.stat2Num')}</span>
-              <span className={styles.heroStatLabel}>{t('home.stat2Label')}</span>
-            </div>
-            <div className={styles.heroStat}>
-              <span className={styles.heroStatNum}>{t('home.stat3Num')}</span>
-              <span className={styles.heroStatLabel}>{t('home.stat3Label')}</span>
-            </div>
-          </div>
+  
+
         </div>
       </section>
 

@@ -4,6 +4,7 @@ import { Noto_Sans_Lao } from 'next/font/google'
 import { routing } from '@/i18n/routing'
 import Navbar from '@/app/components/Navbar'
 import Footer from '@/app/components/Footer'
+import WhatsAppWidget from '@/components/shared/WhatsAppWidget'
 
 const notoSansLao = Noto_Sans_Lao({
   subsets: ['lao'],
@@ -31,6 +32,7 @@ export default async function LocaleLayout(props: {
         <Navbar locale={locale} />
         <main>{props.children}</main>
         <Footer locale={locale} />
+        <WhatsAppWidget />
       </div>
     </NextIntlClientProvider>
   )

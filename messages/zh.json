@@ -151,18 +151,43 @@
     "why2Desc": "费用清晰，估价公正，无隐性费用。我们为您服务。",
     "why3Title": "三语服务",
     "why3Desc": "全程提供老挝语、英语和中文支持。",
-    "teamTitle": "我们的团队"
+    "teamTitle": "我们的团队",
+    "teamMeetTitle": "认识我们的团队",
+    "team1Name": "Ping Silavong",
+    "team1Role": "房产经纪人",
+    "team1Bio": "Ping 是一位扎根于万象的本地房产经纪人，专门帮助客户寻找适合出售或出租的房屋、公寓和土地。她与每位客户紧密合作，了解他们的需求并在整个过程中提供真诚的指导。她的重点是建立信任，让每笔交易都简单顺畅。",
+    "team2Name": "Maximiliano Brito Torres",
+    "team2Role": "技术与网站开发",
+    "team2Bio": "Maximiliano 负责平台背后的技术，确保提供现代化且高效的房产搜索体验。他开发并管理网站，帮助客户轻松浏览房源、获取信息并快速联系。他的目标是为房地产行业带来更加透明和专业的方式。"
   },
   "contact": {
     "title": "联系我们",
     "intro": "联系我们最快的方式是 WhatsApp，我们每周 7 天随时为您服务。",
     "officeTitle": "我们的办公室",
     "officeAddress": "苏法努旺大道 12 号\n占塔布里区\n万象，老挝人民民主共和国",
-    "whatsappLabel": "WhatsApp"
+    "whatsappLabel": "WhatsApp",
+    "emailLabel": "电子邮件",
+    "mapTitle": "位置"
   },
   "footer": {
     "tagline": "老挝万象房产列表",
-    "copy": "© 2025 PM Real Estate. 保留所有权利。"
+    "quickLinks": "快速链接",
+    "listings": "房源列表",
+    "about": "关于我们",
+    "contact": "联系我们",
+    "contactTitle": "联系信息",
+    "address": "老挝万象",
+    "copyright": "保留所有权利。",
+    "staffLogin": "员工登录"
+  },
+  "pwa": {
+    "installButton": "安装",
+    "installAria": "安装应用"
+  },
+  "whatsapp": {
+    "widgetTooltip": "在 WhatsApp 上与我们聊天",
+    "widgetAria": "通过 WhatsApp 联系我们",
+    "defaultMessage": "您好！我对您的房产感兴趣。"
   },
   "notFound": {
     "title": "页面未找到",

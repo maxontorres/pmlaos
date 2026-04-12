@@ -150,8 +150,15 @@
     "why2Title": "Full Transparency",
     "why2Desc": "Clear fees, honest valuations, and no hidden costs. We work for you, not the commission.",
     "why3Title": "Trilingual Service",
-    "why3Desc": "Fluent support in Lao, English, and Mandarin throughout the entire process.",
-    "teamTitle": "Our Team"
+    "why3Desc": "We have fluent support in Lao, Thai, English, (and a bit of Mandarin).",
+    "teamTitle": "Our Team",
+    "teamMeetTitle": "Meet the Team",
+    "team1Name": "Ping Silavong",
+    "team1Role": "Real Estate Agent",
+    "team1Bio": "Ping is a local real estate agent based in Vientiane, specializing in helping clients find houses, apartments, and land for sale or rent. She works closely with each client to understand their needs and provide honest guidance throughout the process. Her focus is on building trust and making every transaction simple and smooth.",
+    "team2Name": "Maximiliano Brito Torres",
+    "team2Role": "Technology & Web Development",
+    "team2Bio": "Maximiliano is responsible for the technology behind the platform, ensuring a modern and efficient property search experience. He develops and manages the website, helping clients easily browse listings, access information, and connect quickly and easily. His goal is to bring a more transparent and professional approach to real estate."
   },
   "contact": {
     "title": "Contact Us",
@@ -159,11 +166,28 @@
     "officeTitle": "Our Office",
     "officeAddress": "Unit 12, Souphanouvong Avenue\nChanthabouly District\nVientiane, Laos PDR",
     "whatsappLabel": "WhatsApp",
+    "emailLabel": "Email",
     "mapTitle": "Location"
   },
   "footer": {
     "tagline": "Property listings in Vientiane, Laos",
-    "copy": "© 2025 PM Real Estate. All rights reserved."
+    "quickLinks": "Quick Links",
+    "listings": "Listings",
+    "about": "About",
+    "contact": "Contact",
+    "contactTitle": "Contact Info",
+    "address": "Vientiane, Laos",
+    "copyright": "All rights reserved.",
+    "staffLogin": "Staff Login"
+  },
+  "pwa": {
+    "installButton": "Install",
+    "installAria": "Install App"
+  },
+  "whatsapp": {
+    "widgetTooltip": "Chat with us on WhatsApp",
+    "widgetAria": "Contact us on WhatsApp",
+    "defaultMessage": "Hello! I am interested in your properties."
   },
   "notFound": {
     "title": "Page Not Found",

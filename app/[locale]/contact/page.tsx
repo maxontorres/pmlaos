@@ -40,6 +40,13 @@ export default async function ContactPage({
               <h2 className={styles.infoTitle}>{t('contact.whatsappLabel')}</h2>
               <WhatsAppButton label={t('listing.whatsapp')} />
             </div>
+
+            <div className={styles.infoBlock}>
+              <h2 className={styles.infoTitle}>{t('contact.emailLabel')}</h2>
+              <a href="mailto:contact@pmlaos.com" className={styles.emailLink}>
+                contact@pmlaos.com
+              </a>
+            </div>
           </div>
 
           <div className={styles.mapSection}>

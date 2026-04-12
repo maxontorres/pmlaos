@@ -17,17 +17,89 @@ npm run test:ui
 
 ## Test Coverage
 
+### CRUD Operations Tests (`tests/crud/`)
+
+#### Listings CRUD (`listings-crud.test.ts`)
+- **CREATE**: Required fields, optional fields, photos, sponsored listings
+- **READ**: By ID, by slug, by category, by status, featured/sponsored
+- **UPDATE**: Basic fields, status transitions, featured/sponsored flags
+- **DELETE**: Single delete, cascade delete photos
+
+#### Clients CRUD (`clients-crud.test.ts`)
+- **CREATE**: Required fields, all fields, agent assignment
+- **READ**: By ID, by status, by source, by interest type, budget filtering
+- **UPDATE**: Basic fields, status, budget, contact date, clear optionals
+- **DELETE**: Single delete, cascade delete client listings
+
+#### Deals CRUD (`deals-crud.test.ts`)
+- **CREATE**: Required fields, rental deals, with relations
+- **READ**: By ID, by client, by listing, by transaction type, date ranges
+- **UPDATE**: Deal value, commission, closed date, notes
+- **DELETE**: Single delete
+
+#### Areas CRUD (`areas-crud.test.ts`)
+- **CREATE**: Required fields, custom order and active status
+- **READ**: By ID, by slug, by nameEn, active areas, ordering
+- **UPDATE**: Names, slug, active status, order
+- **DELETE**: Without listings, prevent deletion with listings
+- **RELATIONSHIPS**: Include listings, count listings
+
+### API Routes Tests (`tests/api/`)
+
+#### Listings API (`listings-api.test.ts`)
+- GET /api/listings - List all with photos
+- POST /api/listings - Create with validation
+- GET /api/listings/[id] - Fetch single listing
+- PUT /api/listings/[id] - Update with validation
+- DELETE /api/listings/[id] - Admin-only deletion
+
+#### Clients API (`clients-api.test.ts`)
+- GET /api/clients - List all clients
+- POST /api/clients - Create with required/optional fields
+- PUT /api/clients/[id] - Update client data
+- DELETE /api/clients/[id] - Admin-only deletion
+
+#### Deals API (`deals-api.test.ts`)
+- GET /api/deals - List all, filter by clientId
+- POST /api/deals - Create with validation
+- PUT /api/deals/[id] - Update deal
+- DELETE /api/deals/[id] - Admin-only deletion
+
+#### Areas API (`areas-api.test.ts`)
+- GET /api/areas - List all ordered
+- POST /api/areas - Create with duplicate check
+- GET /api/areas/[id] - Fetch single area
+- PATCH /api/areas/[id] - Partial update
+- DELETE /api/areas/[id] - Prevent deletion with listings
+
+### Advanced Tests
+
+#### Advanced Relationships (`advanced-relationships.test.ts`)
+- **Cascade Deletes**: Photos, client listings, inquiries
+- **Many-to-Many Operations**: Add/remove listings to clients
+- **Nested Includes**: Deep fetches with multiple relations
+- **Foreign Key Constraints**: Invalid references rejection
+- **Orphaned Records Prevention**: SetNull on inquiry listings
+
+#### Data Validation (`data-validation.test.ts`)
+- **Unique Constraints**: Slug, email, area names
+- **Enum Validations**: Category, status, transaction types
+- **Decimal Precision**: Prices, areas, coordinates, budgets
+- **Default Values**: All models
+- **Required Fields**: Enforcement tests
+- **Timestamps**: CreatedAt, updatedAt auto-generation
+
 ### Admin Dashboard Tests
 
 #### Component Tests
 
-##### Admin Dashboard Page (`tests/admin-dashboard.test.tsx`)
+##### Admin Dashboard Page (`admin-dashboard.test.tsx`)
 - Authentication validation and redirects
 - Dashboard rendering for authenticated users
 - Quick access cards display (Listings, Clients, Deals)
 - Default user name and role handling
 
-##### Admin Layout Component (`tests/admin-layout.test.tsx`)
+##### Admin Layout Component (`admin-layout.test.tsx`)
 - User information rendering
 - Page title and description display
 - Navigation links rendering
@@ -37,7 +109,7 @@ npm run test:ui
 - Mobile navigation
 - Responsive behavior
 
-##### StatCard Component (`tests/admin-statcard.test.tsx`)
+##### StatCard Component (`admin-statcard.test.tsx`)
 - Basic card rendering with label and value
 - String and number value support
 - Variant support (primary, accent, success, danger)
@@ -45,14 +117,14 @@ npm run test:ui
 - Icon rendering
 - CSS class application
 
-##### Navigation Tests (`tests/admin-navigation.test.tsx`)
+##### Navigation Tests (`admin-navigation.test.tsx`)
 - Active route highlighting for all sections
 - Sub-route active states
 - Navigation link attributes
 - Icon rendering
 - Accessibility features
 
-#### Integration Tests (`tests/admin-integration.test.ts`)
+#### Integration Tests (`admin-integration.test.ts`)
 
 ##### Dashboard Statistics
 - Total active listings count
@@ -85,31 +157,31 @@ npm run test:ui
 
 ### Database Tests
 
-#### Database Connection Tests (`tests/database.test.ts`)
+#### Database Connection Tests (`database.test.ts`)
 - Database connectivity validation
 - Table accessibility checks (Users, Listings, Clients, Deals)
 
-#### Admin Clients Tests (`tests/admin-clients.test.ts`)
+#### Admin Clients Tests (`admin-clients.test.ts`)
 - Client data fetching with relationships
 - Status and source enum validation
 - Budget conversion (Decimal → Number)
 - Active user fetching for assignment
 
-#### Admin Listings Tests (`tests/admin-listings.test.ts`)
+#### Admin Listings Tests (`admin-listings.test.ts`)
 - Listing data fetching
 - Price conversion validation
 - Status, transaction type, and category enum validation
 - Photos relationship
 - Area and coordinate validation
 
-#### Admin Deals Tests (`tests/admin-deals.test.ts`)
+#### Admin Deals Tests (`admin-deals.test.ts`)
 - Deal fetching with relationships
 - Deal value and commission validation
 - Transaction type matching
 - Commission calculations
 - Date validation
 
-#### Data Relationships Tests (`tests/data-relationships.test.ts`)
+#### Data Relationships Tests (`data-relationships.test.ts`)
 - Client-Listing many-to-many relationship
 - Listing-Photo one-to-many relationship
 - User-Client assignment relationship

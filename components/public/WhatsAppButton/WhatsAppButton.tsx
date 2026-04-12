@@ -7,7 +7,7 @@ interface Props {
 }
 
 export default function WhatsAppButton({ label, listingTitle, className }: Props) {
-  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '8562055000000'
+  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '8562099935869'
   const message = listingTitle
     ? `Hi, I'm interested in: ${listingTitle}`
     : `Hi, I'd like to know more about your listings`

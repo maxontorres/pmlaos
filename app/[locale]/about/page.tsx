@@ -2,21 +2,6 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import styles from './page.module.css'
 
-const team = [
-  {
-    name: 'Ping Silavong',
-    role: 'Real Estate Agent',
-    photo: '/img/team/ping-silavong.jpg',
-    bio: 'Ping is a local real estate agent based in Vientiane, specializing in helping clients find houses, apartments, and land for sale or rent. She works closely with each client to understand their needs and provide honest guidance throughout the process. Her focus is on building trust and making every transaction simple and smooth.',
-  },
-  {
-    name: 'Maximiliano Brito Torres',
-    role: 'Technology & Web Development',
-    photo: '/img/team/maximiliano-brito-torres.jpg',
-    bio: 'Maximiliano is responsible for the technology behind the platform, ensuring a modern and efficient property search experience. He develops and manages the website, helping clients easily browse listings, access information, and connect quickly and easily. His goal is to bring a more transparent and professional approach to real estate.',
-  },
-]
-
 export default async function AboutPage({
   params,
 }: {
@@ -25,6 +10,21 @@ export default async function AboutPage({
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations('about')
+
+  const team = [
+    {
+      name: t('team1Name'),
+      role: t('team1Role'),
+      photo: '/img/team/ping-silavong.png',
+      bio: t('team1Bio'),
+    },
+    {
+      name: t('team2Name'),
+      role: t('team2Role'),
+      photo: '/img/team/maximiliano-brito-torres.jpg',
+      bio: t('team2Bio'),
+    },
+  ]
 
   return (
     <div className={styles.page}>
@@ -67,7 +67,7 @@ export default async function AboutPage({
       {/* Team */}
       <section className={styles.section}>
         <div className={styles.container}>
-          <h2 className={styles.sectionTitle}>Meet the Team</h2>
+          <h2 className={styles.sectionTitle}>{t('teamMeetTitle')}</h2>
           <div className={styles.teamGrid}>
             {team.map(({ name, role, photo, bio }) => (
               <div key={name} className={styles.teamCard}>

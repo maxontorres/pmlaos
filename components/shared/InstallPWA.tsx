@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import styles from './InstallPWA.module.css'
 
 interface BeforeInstallPromptEvent extends Event {
@@ -11,6 +12,7 @@ interface BeforeInstallPromptEvent extends Event {
 export default function InstallPWA() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [showInstallButton, setShowInstallButton] = useState(false)
+  const t = useTranslations('pwa')
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -47,7 +49,7 @@ export default function InstallPWA() {
   if (!showInstallButton) return null
 
   return (
-    <button onClick={handleInstallClick} className={styles.installButton} aria-label="Install App">
+    <button onClick={handleInstallClick} className={styles.installButton} aria-label={t('installAria')}>
       <svg
         className={styles.icon}
         width="20"
@@ -63,7 +65,7 @@ export default function InstallPWA() {
         <polyline points="7 10 12 15 17 10" />
         <line x1="12" y1="15" x2="12" y2="3" />
       </svg>
-      <span className={styles.text}>Install</span>
+      <span className={styles.text}>{t('installButton')}</span>
     </button>
   )
 }

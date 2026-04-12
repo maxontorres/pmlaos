@@ -86,10 +86,41 @@ const demoListings = [
   },
 ] as const
 
+const demoClients = [
+  {
+    name: 'John Smith',
+    whatsapp: '+85620555001',
+    email: 'john@example.com',
+    nationality: 'USA',
+    gender: 'male',
+    speakEnglish: true,
+    language: 'en',
+    interestType: 'house_sale',
+    budgetMin: 400000,
+    budgetMax: 600000,
+    status: 'active',
+    source: 'website',
+  },
+  {
+    name: '李明',
+    whatsapp: '+85620555002',
+    email: 'li.ming@example.com',
+    nationality: 'China',
+    gender: 'male',
+    speakEnglish: false,
+    language: 'zh',
+    interestType: 'apartment_rent',
+    budgetMin: 1000,
+    budgetMax: 1500,
+    status: 'closed',
+    source: 'referral',
+  },
+] as const
+
 async function main() {
   const password = await bcrypt.hash('changeme', 12)
 
-  await prisma.user.upsert({
+  const admin = await prisma.user.upsert({
     where: { email: 'admin@pmlaos.com' },
     update: {},
     create: {
@@ -108,8 +139,9 @@ async function main() {
     })
   }
 
+  const listings: Record<string, any> = {}
   for (const listing of demoListings) {
-    await prisma.listing.upsert({
+    listings[listing.slug] = await prisma.listing.upsert({
       where: { slug: listing.slug },
       update: {
         category: listing.category,
@@ -168,9 +200,56 @@ async function main() {
     })
   }
 
+  const clients: any[] = []
+  for (const client of demoClients) {
+    const existing = await prisma.client.findFirst({
+      where: { whatsapp: client.whatsapp },
+    })
+    if (existing) {
+      clients.push(existing)
+    } else {
+      clients.push(await prisma.client.create({
+        data: {
+          ...client,
+          assignedTo: admin.id,
+        },
+      }))
+    }
+  }
+
+  await prisma.deal.create({
+    data: {
+      clientId: clients[0].id,
+      listingId: listings['demo-riverside-villa'].id,
+      transactionType: 'sale',
+      dealValue: 485000,
+      commission: 14550,
+      currency: 'USD',
+      commissionUsd: 14550,
+      closedAt: new Date('2026-03-15'),
+      notes: 'Successful sale, client paid in full',
+    },
+  })
+
+  await prisma.deal.create({
+    data: {
+      clientId: clients[1].id,
+      listingId: listings['demo-city-apartment'].id,
+      transactionType: 'rent',
+      dealValue: 1200,
+      commission: 1200,
+      currency: 'USD',
+      commissionUsd: 1200,
+      closedAt: new Date('2026-03-20'),
+      notes: 'One year lease signed',
+    },
+  })
+
   console.log('Seeded admin user: admin@pmlaos.com / changeme')
   console.log(`Seeded ${defaultAreas.length} areas`)
   console.log(`Seeded ${demoListings.length} demo listings`)
+  console.log(`Seeded ${demoClients.length} demo clients`)
+  console.log('Seeded 2 demo deals')
 }
 
 main()

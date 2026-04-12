@@ -10,67 +10,138 @@
 
 /* ── Hero ──────────────────────────────────────────────── */
 .hero {
-  background: var(--color-primary);
-  padding: 4rem 1.5rem;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #1e5a8e 100%);
+  padding: 5rem 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 70% 50%, rgba(255,255,255,0.1) 0%, transparent 60%);
+  pointer-events: none;
 }
 
 .heroTitle {
-  font-size: clamp(1.625rem, 4vw, 2.5rem);
-  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
   color: var(--color-white);
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  position: relative;
 }
 
 .heroSubtitle {
-  font-size: 1.0625rem;
-  color: rgba(255, 255, 255, 0.65);
-  max-width: 560px;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 600px;
+  margin: 0 auto;
   line-height: 1.6;
+  position: relative;
 }
 
 /* ── Body ──────────────────────────────────────────────── */
 .body {
-  padding: 3.5rem 0 5rem;
+  padding: 4rem 0 5rem;
+  background: var(--color-bg-subtle);
+}
+
+@media (max-width: 768px) {
+  .body {
+    padding: 3rem 0 4rem;
+  }
 }
 
 .layout {
-  max-width: 480px;
-  display: flex;
-  flex-direction: column;
+  max-width: 700px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
+}
+
+@media (max-width: 640px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
 }
 
 /* ── Info blocks ─────────────────────────────────────── */
 .infoBlock {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: 1rem;
+  padding: 2rem;
+  background: var(--color-white);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.infoBlock:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .infoTitle {
-  font-size: 0.875rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
 }
 
 .address {
-  font-size: 0.9375rem;
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
   color: var(--color-text);
-  line-height: 1.7;
+  line-height: 1.8;
 }
 
 /* ── Map Section ─────────────────────────────────────── */
 .mapSection {
   margin-top: 3rem;
+  padding: 2.5rem;
+  background: var(--color-white);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+  .mapSection {
+    padding: 2rem 1.5rem;
+    margin-top: 2rem;
+  }
 }
 
 .mapTitle {
-  font-size: 0.875rem;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-text-muted);
-  margin-bottom: 1rem;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.emailLink {
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.emailLink:hover {
+  color: var(--color-accent);
+  transform: translateX(4px);
 }

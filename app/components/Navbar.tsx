@@ -3,29 +3,12 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import styles from './Navbar.module.css'
 import InstallPWA from '@/components/shared/InstallPWA'
 
 interface Props {
   locale: string
-}
-
-const links = {
-  lo: [
-    { href: 'listings', label: 'ລາຍການ' },
-    { href: 'about', label: 'ກ່ຽວກັບ' },
-    { href: 'contact', label: 'ຕິດຕໍ່' },
-  ],
-  en: [
-    { href: 'listings', label: 'Listings' },
-    { href: 'about', label: 'About' },
-    { href: 'contact', label: 'Contact' },
-  ],
-  zh: [
-    { href: 'listings', label: '房源' },
-    { href: 'about', label: '关于' },
-    { href: 'contact', label: '联系' },
-  ],
 }
 
 const nextLocaleMap: Record<string, { locale: string; label: string }> = {
@@ -36,8 +19,14 @@ const nextLocaleMap: Record<string, { locale: string; label: string }> = {
 
 export default function Navbar({ locale }: Props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const navLinks = links[locale as keyof typeof links] ?? links.en
+  const t = useTranslations('nav')
   const next = nextLocaleMap[locale] ?? nextLocaleMap.en
+
+  const navLinks = [
+    { href: 'listings', label: t('listings') },
+    { href: 'about', label: t('about') },
+    { href: 'contact', label: t('contact') },
+  ]
 
   return (
     <header className={styles.header}>

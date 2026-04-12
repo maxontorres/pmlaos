@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 function generateSlug(name: string): string {
   return name
     .toLowerCase()
+    .replace(/[()]/g, '')
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-')
@@ -37,7 +38,7 @@ export async function PATCH(
   }
 
   const body = await req.json()
-  const { nameEn, nameLo, nameZh, active, order } = body
+  const { nameEn, nameLo, nameZh, slug: customSlug, active, order } = body
 
   const { id } = await params
   const existing = await prisma.area.findUnique({
@@ -52,7 +53,21 @@ export async function PATCH(
   
   if (nameEn !== undefined) {
     updateData.nameEn = nameEn
-    updateData.slug = generateSlug(nameEn)
+  }
+  if (customSlug !== undefined) {
+    const newSlug = customSlug?.trim() || (nameEn ? generateSlug(nameEn) : existing.slug)
+    if (newSlug !== existing.slug) {
+      const slugExists = await prisma.area.findFirst({
+        where: { slug: newSlug, id: { not: id } },
+      })
+      if (slugExists) {
+        return NextResponse.json(
+          { error: 'Area with this slug already exists' },
+          { status: 400 }
+        )
+      }
+      updateData.slug = newSlug
+    }
   }
   if (nameLo !== undefined) updateData.nameLo = nameLo
   if (nameZh !== undefined) updateData.nameZh = nameZh

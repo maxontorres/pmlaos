@@ -17,6 +17,16 @@ interface Area {
   updatedAt: string
 }
 
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[()]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
+
 export default function AreasManagementClient() {
   const router = useRouter()
   const [areas, setAreas] = useState<Area[]>([])
@@ -27,6 +37,7 @@ export default function AreasManagementClient() {
     nameEn: '',
     nameLo: '',
     nameZh: '',
+    slug: '',
     active: true,
     order: 0,
   })
@@ -63,7 +74,7 @@ export default function AreasManagementClient() {
       })
 
       if (res.ok) {
-        setFormData({ nameEn: '', nameLo: '', nameZh: '', active: true, order: 0 })
+        setFormData({ nameEn: '', nameLo: '', nameZh: '', slug: '', active: true, order: 0 })
         setShowAddForm(false)
         fetchAreas()
       } else {
@@ -85,6 +96,7 @@ export default function AreasManagementClient() {
           nameEn: area.nameEn,
           nameLo: area.nameLo,
           nameZh: area.nameZh,
+          slug: area.slug,
           active: area.active,
           order: area.order,
         }),
@@ -134,7 +146,16 @@ export default function AreasManagementClient() {
 
   function updateArea(id: string, field: string, value: any) {
     setAreas((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, [field]: value } : a))
+      prev.map((a) => {
+        if (a.id === id) {
+          const updated = { ...a, [field]: value }
+          if (field === 'nameEn') {
+            updated.slug = generateSlug(value)
+          }
+          return updated
+        }
+        return a
+      })
     )
   }
 
@@ -175,7 +196,11 @@ export default function AreasManagementClient() {
               <input
                 type="text"
                 value={formData.nameEn}
-                onChange={(e) => setFormData({ ...formData, nameEn: e.target.value })}
+                onChange={(e) => setFormData({ 
+                  ...formData, 
+                  nameEn: e.target.value,
+                  slug: generateSlug(e.target.value)
+                })}
                 placeholder="e.g., Sikhottabong"
                 className={areaStyles.input}
               />
@@ -203,6 +228,19 @@ export default function AreasManagementClient() {
                 placeholder="e.g., 西科塔蓬"
                 className={areaStyles.input}
               />
+            </div>
+            <div className={areaStyles.formGroup}>
+              <label className={areaStyles.label}>
+                Slug
+              </label>
+              <input
+                type="text"
+                value={formData.slug}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                placeholder="Auto-generated from English name"
+                className={areaStyles.input}
+              />
+              <p className={areaStyles.helpText}>Auto-updates based on English name (editable)</p>
             </div>
             <div className={areaStyles.formGroup}>
               <label className={areaStyles.label}>
@@ -283,6 +321,15 @@ export default function AreasManagementClient() {
                           type="text"
                           value={area.nameZh}
                           onChange={(e) => updateArea(area.id, 'nameZh', e.target.value)}
+                          className={areaStyles.input}
+                        />
+                      </div>
+                      <div className={areaStyles.formGroup}>
+                        <label className={areaStyles.label}>Slug</label>
+                        <input
+                          type="text"
+                          value={area.slug}
+                          onChange={(e) => updateArea(area.id, 'slug', e.target.value)}
                           className={areaStyles.input}
                         />
                       </div>
