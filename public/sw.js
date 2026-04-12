@@ -1,5 +1,5 @@
 // Advanced Service Worker for PWA
-const VERSION = 'v2.0.0';
+const VERSION = 'v2.1.0';
 const CACHE_STATIC = `pmlaos-static-${VERSION}`;
 const CACHE_DYNAMIC = `pmlaos-dynamic-${VERSION}`;
 const CACHE_IMAGES = `pmlaos-images-${VERSION}`;
@@ -102,6 +102,11 @@ self.addEventListener('fetch', (event) => {
 
   // Skip chrome extensions
   if (url.protocol === 'chrome-extension:') {
+    return;
+  }
+
+  // Skip authentication routes - CRITICAL for OAuth to work in PWA
+  if (url.pathname.startsWith('/api/auth/')) {
     return;
   }
 
