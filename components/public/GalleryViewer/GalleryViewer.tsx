@@ -91,11 +91,11 @@ export default function GalleryViewer({ photos, alt }: Props) {
           aria-modal="true"
           aria-label="Photo viewer"
         >
-          <div className={styles.lightbox} onClick={e => e.stopPropagation()}>
+          <div className={styles.lightbox}>
             <button className={styles.closeBtn} onClick={close} aria-label="Close">
               ×
             </button>
-            <div className={styles.imageWrap}>
+            <div className={styles.imageWrap} onClick={e => e.stopPropagation()}>
               <Image
                 src={photos[lightboxIndex]}
                 alt={`${alt} photo ${lightboxIndex + 1}`}
@@ -110,14 +110,14 @@ export default function GalleryViewer({ photos, alt }: Props) {
               <>
                 <button
                   className={`${styles.navBtn} ${styles.navPrev}`}
-                  onClick={prev}
+                  onClick={e => { e.stopPropagation(); prev(); }}
                   aria-label="Previous photo"
                 >
                   ‹
                 </button>
                 <button
                   className={`${styles.navBtn} ${styles.navNext}`}
-                  onClick={next}
+                  onClick={e => { e.stopPropagation(); next(); }}
                   aria-label="Next photo"
                 >
                   ›
