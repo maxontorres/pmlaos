@@ -56,6 +56,7 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  metadataBase: new URL('https://pmlaos.com'),
   alternates: {
     canonical: 'https://pmlaos.com',
   },

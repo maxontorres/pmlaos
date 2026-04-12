@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.env.local
+*.log
+tests
+*.tsbuildinfo
+vitest.config.ts
+*.md
+scripts
+.vscode
+.DS_Store
