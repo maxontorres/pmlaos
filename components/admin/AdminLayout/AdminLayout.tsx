@@ -197,6 +197,13 @@ export default function AdminLayout({ children, user, pageTitle, pageDescription
 
       <aside className={`${styles.sidebar} ${sidebarVisible ? styles.sidebarOpen : ''}`}>
         <div className={styles.logo}>
+          {isDesktop && (
+            <img 
+              src="/img/pmlaos-logo-no-bg.png" 
+              alt="PM Real Estate Logo" 
+              className={styles.logoImage}
+            />
+          )}
           <div className={styles.logoCopy}>
             <p className={styles.logoText}>PM Real Estate</p>
             <p className={styles.logoSub}>Admin Panel</p>
