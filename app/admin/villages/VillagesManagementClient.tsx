@@ -33,6 +33,7 @@ export default function VillagesManagementClient() {
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [formData, setFormData] = useState({
     nameEn: '',
     nameLo: '',
@@ -157,6 +158,90 @@ export default function VillagesManagementClient() {
         return v
       })
     )
+  }
+
+  function handleDragStart(index: number) {
+    setDraggedIndex(index)
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault()
+  }
+
+  async function handleDrop(dropIndex: number) {
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null)
+      return
+    }
+
+    const reorderedVillages = [...villages]
+    const [draggedItem] = reorderedVillages.splice(draggedIndex, 1)
+    reorderedVillages.splice(dropIndex, 0, draggedItem)
+
+    const updatedVillages = reorderedVillages.map((village, index) => ({
+      ...village,
+      order: index,
+    }))
+
+    setVillages(updatedVillages)
+    setDraggedIndex(null)
+
+    try {
+      await Promise.all(
+        updatedVillages.map((village) =>
+          fetch(`/api/villages/${village.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order: village.order }),
+          })
+        )
+      )
+    } catch (error) {
+      console.error('Failed to update village order:', error)
+      alert('Failed to update village order')
+      fetchVillages()
+    }
+  }
+
+  function handleDragEnd() {
+    setDraggedIndex(null)
+  }
+
+  async function moveVillage(index: number, direction: 'up' | 'down') {
+    if (
+      (direction === 'up' && index === 0) ||
+      (direction === 'down' && index === villages.length - 1)
+    ) {
+      return
+    }
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1
+    const reorderedVillages = [...villages]
+    const [movedItem] = reorderedVillages.splice(index, 1)
+    reorderedVillages.splice(newIndex, 0, movedItem)
+
+    const updatedVillages = reorderedVillages.map((village, idx) => ({
+      ...village,
+      order: idx,
+    }))
+
+    setVillages(updatedVillages)
+
+    try {
+      await Promise.all(
+        updatedVillages.map((village) =>
+          fetch(`/api/villages/${village.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order: village.order }),
+          })
+        )
+      )
+    } catch (error) {
+      console.error('Failed to update village order:', error)
+      alert('Failed to update village order')
+      fetchVillages()
+    }
   }
 
   if (loading) {
@@ -286,11 +371,20 @@ export default function VillagesManagementClient() {
             <p className={villageStyles.emptyText}>Get started by creating your first village</p>
           </div>
         ) : (
-          villages.map((village) => {
+          villages.map((village, index) => {
             const isEditing = editingId === village.id
+            const isDragging = draggedIndex === index
 
             return (
-              <article key={village.id} className={villageStyles.areaCard}>
+              <article 
+                key={village.id} 
+                className={`${villageStyles.areaCard} ${isDragging ? villageStyles.dragging : ''}`}
+                draggable={!isEditing}
+                onDragStart={() => handleDragStart(index)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(index)}
+                onDragEnd={handleDragEnd}
+              >
                 {isEditing ? (
                   <div className={villageStyles.editForm}>
                     <div className={villageStyles.editHeader}>
@@ -367,11 +461,32 @@ export default function VillagesManagementClient() {
                 ) : (
                   <>
                     <div className={villageStyles.cardHeader}>
-                      <div className={villageStyles.cardTitleGroup}>
-                        <h3 className={villageStyles.cardTitle}>{village.nameEn}</h3>
-                        <span className={`${styles.pill} ${village.active ? styles.active : styles.inactive}`}>
-                          {village.active ? '✓ Active' : 'Inactive'}
-                        </span>
+                      <div className={villageStyles.cardHeaderLeft}>
+                        <div className={villageStyles.dragHandle} title="Drag to reorder">⋮⋮</div>
+                        <div className={villageStyles.cardTitleGroup}>
+                          <h3 className={villageStyles.cardTitle}>{village.nameEn}</h3>
+                          <span className={`${styles.pill} ${village.active ? styles.active : styles.inactive}`}>
+                            {village.active ? '✓ Active' : 'Inactive'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className={villageStyles.arrowButtons}>
+                        <button
+                          onClick={() => moveVillage(index, 'up')}
+                          disabled={index === 0}
+                          className={villageStyles.arrowBtn}
+                          title="Move up"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          onClick={() => moveVillage(index, 'down')}
+                          disabled={index === villages.length - 1}
+                          className={villageStyles.arrowBtn}
+                          title="Move down"
+                        >
+                          ↓
+                        </button>
                       </div>
                     </div>
                     <div className={villageStyles.cardBody}>
