@@ -34,6 +34,28 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['react-map-gl', 'maplibre-gl'],
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cloud.umami.is",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https: https://tile.openstreetmap.org",
+              "font-src 'self' data:",
+              "connect-src 'self' https://tile.openstreetmap.org https://*.neon.tech https://cloud.umami.is",
+              "frame-src 'self'",
+              "worker-src 'self' blob:",
+            ].join('; '),
+          },
+        ],
+      },
+    ]
+  },
 }
 
 export default withNextIntl(nextConfig)
