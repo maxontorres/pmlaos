@@ -6,11 +6,43 @@ import LocationMap from '@/components/shared/LocationMap/LocationMap'
 import WhatsAppButton from '@/components/public/WhatsAppButton/WhatsAppButton'
 import ShareButton from '@/components/public/ShareButton/ShareButton'
 import { getListingBySlug, getAllPublicSlugs, formatPrice } from '@/lib/listingsPublic'
+import { auth } from '@/lib/auth'
 import styles from './page.module.css'
 
 export async function generateStaticParams() {
   const slugs = await getAllPublicSlugs()
   return slugs.map((slug) => ({ slug }))
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}) {
+  const { slug } = await params
+  const listing = await getListingBySlug(slug)
+  if (!listing) return {}
+
+  const title = listing.titleEn
+  const description = listing.descriptionEn.slice(0, 160)
+  const url = `https://pmlaos.com/en/listings/${slug}`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      type: 'website' as const,
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title,
+      description,
+    },
+    alternates: { canonical: url },
+  }
 }
 
 export default async function ListingDetailPage({
@@ -24,6 +56,9 @@ export default async function ListingDetailPage({
 
   const listing = await getListingBySlug(slug)
   if (!listing) notFound()
+
+  const session = await auth()
+  const isAdmin = !!(session?.user)
 
   const categoryKey = `listing.category${listing.category.charAt(0).toUpperCase() + listing.category.slice(1)}` as
     | 'listing.categoryLand'
@@ -68,6 +103,9 @@ export default async function ListingDetailPage({
     listing.category !== 'land' && listing.swimmingPool
       ? { label: t('listing.amenityPool'), value: t('listing.parkingYes'), icon: '🏊' }
       : null,
+    listing.category !== 'land' && listing.hasFitness
+      ? { label: t('listing.amenityGym'), value: t('listing.parkingYes'), icon: '🏋️' }
+      : null,
     listing.areaSqm
       ? { label: t('listing.area'), value: `${listing.areaSqm} ${t('listing.sqm')}`, icon: '📐' }
       : null,
@@ -103,6 +141,9 @@ export default async function ListingDetailPage({
   if (listing.swimmingPool && !listing.amenities.includes('pool')) {
     amenityItems.unshift(amenityLabels['pool'])
   }
+  if (listing.hasFitness && !listing.amenities.includes('gym')) {
+    amenityItems.unshift(amenityLabels['gym'])
+  }
 
   return (
     <div className={styles.page}>
@@ -113,6 +154,11 @@ export default async function ListingDetailPage({
           <Link href={`/${locale}/listings`} className={styles.back}>
             {t('listing.backToListings')}
           </Link>
+          {isAdmin && (
+            <a href={`/admin/listings?edit=${listing.id}`} className={styles.adminEditButton}>
+              Edit listing
+            </a>
+          )}
         </div>
       </div>
 
@@ -213,37 +259,19 @@ export default async function ListingDetailPage({
                 </div>
               </div>
 
-              {/* Map placeholder */}
+              {/* Map */}
+              {listing.lat != null && listing.lng != null ? (
               <div className={styles.mapSection}>
                 <h2 className={styles.sectionTitle}>{t('listing.mapPlaceholder')}</h2>
-                {listing.lat != null && listing.lng != null ? (
-                  <LocationMap
-                    lat={listing.lat}
-                    lng={listing.lng}
-                    label={listing.titleEn}
-                    note={t('listing.approxLocation')}
-                    showControls
-                  />
-                ) : (
-                  <div className={styles.mapPlaceholder}>
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-                      <circle cx="12" cy="9" r="2.5" />
-                    </svg>
-                    <span>{t('listing.approxLocation')}</span>
-                  </div>
-                )}
+                <LocationMap
+                  lat={listing.lat}
+                  lng={listing.lng}
+                  label={listing.titleEn}
+                  note={t('listing.approxLocation')}
+                  showControls
+                />
               </div>
+              ) : null}
             </div>
 
             {/* Sidebar */}

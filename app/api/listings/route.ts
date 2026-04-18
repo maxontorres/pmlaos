@@ -60,9 +60,16 @@ export async function POST(req: NextRequest) {
   }
   const data = validation.data
 
+  if (data.slug) {
+    const existing = await prisma.listing.findUnique({ where: { slug: data.slug } })
+    if (existing) {
+      return jsonError('Please correct the highlighted fields.', 409, { slug: 'This slug is already in use.' })
+    }
+  }
+
   const listing = await prisma.listing.create({
     data: {
-      slug: generateSlug(data.titleEn),
+      slug: data.slug ?? generateSlug(data.titleEn),
       category: data.category,
       transaction: data.transaction,
       status: data.status,
@@ -84,6 +91,7 @@ export async function POST(req: NextRequest) {
       bathrooms: data.bathrooms,
       parkingAvailable: data.parkingAvailable,
       swimmingPool: data.swimmingPool,
+      hasFitness: data.hasFitness,
       lat: data.lat,
       lng: data.lng,
       photos: data.photos.length > 0

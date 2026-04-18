@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout/AdminLayout'
 import ListingsManager from '@/components/admin/ListingsManager/ListingsManager'
 import { auth } from '@/lib/auth'
@@ -16,7 +17,9 @@ export default async function AdminListingsPage() {
       pageTitle="Listings"
       pageDescription="Create, edit, and manage listings."
     >
-      <ListingsManager canDelete={user.role === 'admin'} />
+      <Suspense>
+        <ListingsManager canDelete={user.role === 'admin'} />
+      </Suspense>
     </AdminLayout>
   )
 }

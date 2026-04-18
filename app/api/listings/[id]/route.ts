@@ -44,10 +44,18 @@ export async function PUT(
   }
   const data = validation.data
 
+  if (data.slug) {
+    const conflict = await prisma.listing.findFirst({ where: { slug: data.slug, NOT: { id } } })
+    if (conflict) {
+      return jsonError('Please correct the highlighted fields.', 409, { slug: 'This slug is already in use.' })
+    }
+  }
+
   try {
     const listing = await prisma.listing.update({
       where: { id },
       data: {
+        ...(data.slug ? { slug: data.slug } : {}),
         category: data.category,
         transaction: data.transaction,
         status: data.status,
@@ -69,6 +77,7 @@ export async function PUT(
         bathrooms: data.bathrooms,
         parkingAvailable: data.parkingAvailable,
         swimmingPool: data.swimmingPool,
+        hasFitness: data.hasFitness,
         lat: data.lat,
         lng: data.lng,
         photos: {

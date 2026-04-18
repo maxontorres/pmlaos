@@ -85,14 +85,10 @@
   "mapToggleHide": "ປິດແຜນທີ່",
   "mapToggleShowHint": "ເປີດແຜນທີ່ເຂດເພື່ອໃຫ້ໜ້າດູສະອາດຂຶ້ນ.",
   "mapToggleHideHint": "ປິດແຜນທີ່ເຂດ",
-  "areaAll": "ທຸກເຂດ",
-  "areaSikhottabong": "ສີໂຄດຕະບອງ",
-  "areaPhonxay": "ໂພນໄຊ",
-  "areaChanthabouly": "ຈັນທະບູລີ",
-  "areaXaysetha": "ໄຊເສດຖາ",
+  "areaAll": "ທຸກບ້ານ",
   "tabBuy": "ຊື້",
   "tabRent": "ເຊົ່າ",
-  "filterAreaSection": "ເຂດ",
+  "filterAreaSection": "ບ້ານ",
   "filterAll": "ທັງໝົດ",
   "filterHouse": "ເຮືອນ",
   "filterApartment": "ອາພາດເມັນ",
@@ -112,7 +108,9 @@
   "filterToggleLabel": "ຕົວກອງ",
   "applyFilters": "ນໍາໃຊ້ຕົວກອງ",
   "clearFilters": "ລ້າງຕົວກອງ",
-  "noResults": "ບໍ່ພົບລາຍການສໍາລັບຕົວກອງນີ້."
+  "noResults": "ບໍ່ພົບລາຍການສໍາລັບຕົວກອງນີ້.",
+  "paginationPrev": "ກ່ອນໜ້າ",
+  "paginationNext": "ຕໍ່ໄປ"
 },
 "listing": {
   "categoryLand": "ທີ່ດິນ",

@@ -145,6 +145,7 @@ model Listing {
   bathrooms        Int?
   parkingAvailable Boolean          @default(false)
   swimmingPool     Boolean          @default(false)
+  hasFitness       Boolean          @default(false)
   amenities        String[]         @default([])
   lat              Decimal?         @db.Decimal(10, 7)
   lng              Decimal?         @db.Decimal(10, 7)

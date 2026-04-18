@@ -2,10 +2,12 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import ListingsMapPanel from '@/components/public/ListingsMap/ListingsMapPanel'
 import ListingCard from '@/components/public/ListingCard/ListingCard'
 import RangeSlider from '@/components/public/RangeSlider/RangeSlider'
-import { getPublicListings, type PropertyCategory, type TransactionType } from '@/lib/listingsPublic'
+import { getPublicListings, getListingsCount, type PropertyCategory, type TransactionType } from '@/lib/listingsPublic'
+import Pagination from '@/components/public/Pagination/Pagination'
 import { offsetCoordinates } from '@/lib/mapOffset'
 import { prisma } from '@/lib/prisma'
 import FiltersPanel from '@/components/public/FiltersPanel/FiltersPanel'
+import AutoSubmitForm from '@/components/public/AutoSubmitForm/AutoSubmitForm'
 import styles from './page.module.css'
 
 type AdvancedFilters = {
@@ -17,17 +19,20 @@ type AdvancedFilters = {
   amenities?: string[]
 }
 
+const PAGE_SIZE = 12
+
 type ListingsHrefOptions = {
   transaction?: TransactionType
   category?: PropertyCategory
   query?: string
   areaSlug?: string
   selected?: string
+  page?: number
 } & AdvancedFilters
 
 function buildListingsHref(
   locale: string,
-  { transaction, category, query, areaSlug, selected, minPrice, maxPrice, minArea, maxArea, minBedrooms, amenities }: ListingsHrefOptions = {},
+  { transaction, category, query, areaSlug, selected, minPrice, maxPrice, minArea, maxArea, minBedrooms, amenities, page }: ListingsHrefOptions = {},
 ): string {
   const params = new URLSearchParams()
   if (transaction) params.set('transaction', transaction)
@@ -43,6 +48,7 @@ function buildListingsHref(
   if (amenities?.length) {
     for (const a of amenities) params.append('amenities', a)
   }
+  if (page != null && page > 1) params.set('page', String(page))
   const queryString = params.toString()
   return queryString ? `/${locale}/listings?${queryString}` : `/${locale}/listings`
 }
@@ -64,6 +70,7 @@ export default async function ListingsPage({
     maxArea?: string
     minBedrooms?: string
     amenities?: string | string[]
+    page?: string
   }>
 }) {
   const { locale } = await params
@@ -79,6 +86,7 @@ export default async function ListingsPage({
     maxArea: rawMaxArea,
     minBedrooms: rawMinBedrooms,
     amenities: rawAmenities,
+    page: rawPage,
   } = await searchParams
   setRequestLocale(locale)
   const t = await getTranslations()
@@ -108,6 +116,8 @@ export default async function ListingsPage({
     ? undefined
     : (Array.isArray(rawAmenities) ? rawAmenities.filter(Boolean) : [rawAmenities]) || undefined
 
+  const page = Math.max(1, Number(rawPage) || 1)
+
   const adv: AdvancedFilters = { minPrice, maxPrice, minArea, maxArea, minBedrooms, amenities }
   const hasAdvancedFilters = minPrice != null || maxPrice != null || minArea != null || maxArea != null || minBedrooms != null || amenities?.length
   const activeFilterCount = [
@@ -118,10 +128,14 @@ export default async function ListingsPage({
   ].filter(Boolean).length
 
   // Compute slider bounds from listings matching the active transaction (if set)
-  const [boundsPool, filtered] = await Promise.all([
+  const [boundsPool, totalCount, filtered, baseResults] = await Promise.all([
     getPublicListings({ transaction }),
-    getPublicListings({ category, transaction, areaSlug, query, minPrice, maxPrice, minArea, maxArea, minBedrooms, amenities }),
+    getListingsCount({ category, transaction, areaSlug, query, minPrice, maxPrice, minArea, maxArea, minBedrooms, amenities }),
+    getPublicListings({ category, transaction, areaSlug, query, minPrice, maxPrice, minArea, maxArea, minBedrooms, amenities, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }),
+    getPublicListings({ category, transaction, query, minPrice, maxPrice, minArea, maxArea, minBedrooms, amenities }),
   ])
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
 
   const boundsPoolPrices = boundsPool.map((l) => l.price)
   const priceBoundMin = boundsPoolPrices.length ? Math.floor(Math.min(...boundsPoolPrices) / 100) * 100 : 0
@@ -131,8 +145,6 @@ export default async function ListingsPage({
   const boundsPoolAreas = boundsPool.map((l) => l.areaSqm).filter((v): v is number => v != null)
   const areaBoundMin = boundsPoolAreas.length ? Math.floor(Math.min(...boundsPoolAreas) / 10) * 10 : 0
   const areaBoundMax = boundsPoolAreas.length ? Math.ceil(Math.max(...boundsPoolAreas) / 10) * 10 : 2_000
-
-  const baseResults = await getPublicListings({ category, transaction, query, minPrice, maxPrice, minArea, maxArea, minBedrooms, amenities })
   const selectedListing = filtered.find((listing) => listing.slug === rawSelected)
   const isMapOpen = false
 
@@ -166,16 +178,18 @@ export default async function ListingsPage({
       active: pill.cat === category,
     }))
 
-  const mapAreas = areas.map((area) => {
-    const areaCount = baseResults.filter((listing) => listing.areaSlug === area.slug).length
-    return {
-      slug: area.slug,
-      label: area.nameEn,
-      count: areaCount,
-      href: buildListingsHref(locale, { transaction, category, query, areaSlug: area.slug, ...adv }),
-      active: area.slug === areaSlug,
-    }
-  })
+  const mapAreas = areas
+    .map((area) => {
+      const areaCount = baseResults.filter((listing) => listing.areaSlug === area.slug).length
+      return {
+        slug: area.slug,
+        label: locale === 'lo' ? area.nameLo : locale === 'zh' ? area.nameZh : area.nameEn,
+        count: areaCount,
+        href: buildListingsHref(locale, { transaction, category, query, areaSlug: area.slug, ...adv }),
+        active: area.slug === areaSlug,
+      }
+    })
+    .filter((area) => area.count > 0 || area.active)
 
   const allAreasHref = buildListingsHref(locale, { transaction, category, query, ...adv })
 
@@ -229,9 +243,8 @@ export default async function ListingsPage({
             ))}
           </div>
 
-          {/* Area filter pills */}
+          {/* Village filter pills */}
           <div className={styles.areaPills}>
-            <span className={styles.areaPillsLabel}>{t('listings.filterAreaSection')}</span>
             <div className={styles.areaPillsRow}>
               <a
                 href={allAreasHref}
@@ -254,7 +267,7 @@ export default async function ListingsPage({
           </div>
 
           {/* Unified search + advanced filters form */}
-          <form action={`/${locale}/listings`} method="get" className={styles.filterForm}>
+          <AutoSubmitForm action={`/${locale}/listings`} method="get" className={styles.filterForm}>
             {transaction && <input type="hidden" name="transaction" value={transaction} />}
             {category && <input type="hidden" name="category" value={category} />}
             {areaSlug && <input type="hidden" name="areaSlug" value={areaSlug} />}
@@ -390,7 +403,7 @@ export default async function ListingsPage({
               </div>
             </div>
             </FiltersPanel>
-          </form>
+          </AutoSubmitForm>
         </div>
 
         <ListingsMapPanel
@@ -427,6 +440,14 @@ export default async function ListingsPage({
         ) : (
           <p className={styles.empty}>{t('listings.noResults')}</p>
         )}
+
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          prevLabel={t('listings.paginationPrev')}
+          nextLabel={t('listings.paginationNext')}
+          buildHref={(p) => buildListingsHref(locale, { transaction, category, query, areaSlug, ...adv, page: p })}
+        />
       </div>
     </div>
   )

@@ -58,14 +58,10 @@
     "mapToggleHide": "收起地图",
     "mapToggleShowHint": "按需展开区域地图，让页面更干净。",
     "mapToggleHideHint": "收起区域地图",
-    "areaAll": "全部区域",
-    "areaSikhottabong": "西科达邦",
-    "areaPhonxay": "蓬赛",
-    "areaChanthabouly": "占塔布里",
-    "areaXaysetha": "赛色塔",
+    "areaAll": "全部村庄",
     "tabBuy": "购买",
     "tabRent": "租房",
-    "filterAreaSection": "区域",
+    "filterAreaSection": "村庄",
     "filterAll": "全部",
     "filterHouse": "住宅",
     "filterApartment": "公寓",
@@ -85,7 +81,9 @@
     "filterToggleLabel": "筛选",
     "applyFilters": "应用筛选",
     "clearFilters": "清除筛选",
-    "noResults": "没有找到符合此筛选条件的房源。"
+    "noResults": "没有找到符合此筛选条件的房源。",
+    "paginationPrev": "上一页",
+    "paginationNext": "下一页"
   },
   "listing": {
     "categoryLand": "土地",

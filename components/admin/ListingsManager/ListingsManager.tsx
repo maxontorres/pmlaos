@@ -1,7 +1,9 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { FormEvent, useCallback, useEffect, useState, useTransition } from 'react'
+import { useSearchParams } from 'next/navigation'
 import LocationMap from '@/components/shared/LocationMap/LocationMap'
 import DeleteConfirmModal from '@/components/admin/shared/DeleteConfirmModal'
 import { EyeIcon, EditIcon, TrashIcon } from '@/components/admin/shared/AdminIcons'
@@ -44,6 +46,7 @@ type ListingSummary = {
   bathrooms?: number | null
   parkingAvailable?: boolean | null
   swimmingPool?: boolean | null
+  hasFitness?: boolean | null
   lat?: string | number | null
   lng?: string | number | null
   photos?: Array<{ url: string; order?: number }>
@@ -64,6 +67,7 @@ type ListingDetail = ListingSummary & {
 
 type FormValues = {
   titleEn: string
+  slug: string
   descriptionEn: string
   villageId: string
   district: string
@@ -80,6 +84,7 @@ type FormValues = {
   bathrooms: string
   parkingAvailable: boolean
   swimmingPool: boolean
+  hasFitness: boolean
   lat: string | null
   lng: string | null
   photos: string[]
@@ -92,6 +97,7 @@ type ApiError = {
 
 const EMPTY_FORM: FormValues = {
   titleEn: '',
+  slug: '',
   descriptionEn: '',
   villageId: '',
   district: '',
@@ -108,6 +114,7 @@ const EMPTY_FORM: FormValues = {
   bathrooms: '',
   parkingAvailable: false,
   swimmingPool: false,
+  hasFitness: false,
   lat: null,
   lng: null,
   photos: [],
@@ -120,6 +127,7 @@ function toInputValue(value: string | number | null | undefined) {
 function toFormValues(listing: ListingDetail): FormValues {
   return {
     titleEn: listing.titleEn ?? '',
+    slug: listing.slug ?? '',
     descriptionEn: listing.descriptionEn ?? '',
     villageId: listing.village?.id ?? '',
     district: listing.district ?? '',
@@ -136,6 +144,7 @@ function toFormValues(listing: ListingDetail): FormValues {
     bathrooms: toInputValue(listing.bathrooms),
     parkingAvailable: Boolean(listing.parkingAvailable),
     swimmingPool: Boolean(listing.swimmingPool),
+    hasFitness: Boolean(listing.hasFitness),
     lat: listing.lat === null || listing.lat === undefined ? null : String(listing.lat),
     lng: listing.lng === null || listing.lng === undefined ? null : String(listing.lng),
     photos: listing.photos?.map((photo) => photo.url) ?? [],
@@ -219,10 +228,12 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
   const [uploading, setUploading] = useState(false)
   const [pageError, setPageError] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false)
   const [gpsStatus, setGpsStatus] = useState('')
   const [manualLocationEnabled, setManualLocationEnabled] = useState(false)
   const [manualCoords, setManualCoords] = useState('')
   const [isPending, startTransition] = useTransition()
+  const searchParams = useSearchParams()
 
   const loadListings = useCallback(async () => {
     if (useLocalData) {
@@ -267,6 +278,12 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
     void loadListings()
   }, [loadListings])
 
+  useEffect(() => {
+    const editId = searchParams.get('edit')
+    if (editId) openEdit(editId)
+  // openEdit is defined in the same render scope; run once on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const updateField = (
     key: keyof FormValues,
@@ -288,6 +305,7 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
     setFormValues(EMPTY_FORM)
     setFieldErrors({})
     setPageError('')
+    setSlugManuallyEdited(false)
     setGpsStatus('')
     setManualLocationEnabled(false)
     setManualCoords('')
@@ -383,6 +401,7 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
           order: photo.order ?? order,
         })),
       }))
+      setSlugManuallyEdited(true)
       setEditingId(localListing.id)
       setMode('edit')
       return
@@ -404,6 +423,7 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
 
           const data = (await response.json()) as ListingDetail
           setFormValues(toFormValues(data))
+          setSlugManuallyEdited(true)
           setEditingId(data.id)
           setMode('edit')
         } catch {
@@ -434,6 +454,7 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
 
     const payload = {
       ...formValues,
+      slug: formValues.slug.trim() || undefined,
       titleEn: formValues.titleEn.trim(),
       descriptionEn: formValues.descriptionEn.trim(),
       villageId: formValues.villageId || null,
@@ -823,21 +844,20 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
                       {listing.bedrooms ? <span className={styles.factChip}>{listing.bedrooms} bed</span> : null}
                       {listing.bathrooms ? <span className={styles.factChip}>{listing.bathrooms} bath</span> : null}
                       {listing.parkingAvailable ? <span className={styles.factChip}>Parking</span> : null}
+                      {listing.hasFitness ? <span className={styles.factChip}>Fitness</span> : null}
                       {listing.lat != null && listing.lng != null ? <span className={styles.factChip}>GPS saved</span> : null}
                     </div>
 
                     <div className={styles.actionRow}>
                       {listing.slug ? (
-                        <button
-                          type="button"
+                        <Link
+                          href={`/en/listings/${listing.slug}`}
                           className={`${styles.actionButton} ${styles.viewButton}`}
-                          onClick={() => openView(listing.id)}
-                          disabled={loadingForm || isPending}
                           aria-label={`View ${listing.titleEn}`}
                         >
                           <span className={styles.actionIcon}><EyeIcon /></span>
                           <span>View</span>
-                        </button>
+                        </Link>
                       ) : (
                         <span className={`${styles.actionButton} ${styles.viewButton} ${styles.disabledButton}`} aria-label={`Cannot view ${listing.titleEn}`}>
                           <span className={styles.actionIcon}><EyeIcon /></span>
@@ -969,10 +989,11 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
               <div className={styles.field}>
                 <span className={styles.label}>Amenities</span>
                 <div className={styles.readonlyValue}>
-                  {formValues.parkingAvailable ? 'Parking' : ''}
-                  {formValues.parkingAvailable && formValues.swimmingPool ? ', ' : ''}
-                  {formValues.swimmingPool ? 'Swimming pool' : ''}
-                  {!formValues.parkingAvailable && !formValues.swimmingPool ? '—' : ''}
+                  {[
+                    formValues.parkingAvailable ? 'Parking' : null,
+                    formValues.swimmingPool ? 'Swimming pool' : null,
+                    formValues.hasFitness ? 'Fitness room' : null,
+                  ].filter(Boolean).join(', ') || '—'}
                 </div>
               </div>
             </div>
@@ -1010,10 +1031,29 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
               <input
                 className={styles.input}
                 value={formValues.titleEn}
-                onChange={(event) => updateField('titleEn', event.target.value)}
+                onChange={(event) => {
+                  updateField('titleEn', event.target.value)
+                  if (!slugManuallyEdited) {
+                    updateField('slug', generateSlug(event.target.value))
+                  }
+                }}
                 placeholder="2-bedroom apartment in central Vientiane"
               />
               {fieldErrors.titleEn ? <span className={styles.fieldError}>{fieldErrors.titleEn}</span> : null}
+            </label>
+
+            <label className={styles.field}>
+              <span className={styles.label}>Slug</span>
+              <input
+                className={styles.input}
+                value={formValues.slug}
+                onChange={(event) => {
+                  setSlugManuallyEdited(true)
+                  updateField('slug', event.target.value)
+                }}
+                placeholder="auto-generated-from-title"
+              />
+              {fieldErrors.slug ? <span className={styles.fieldError}>{fieldErrors.slug}</span> : null}
             </label>
 
             <label className={styles.field}>
@@ -1235,6 +1275,14 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
                     onChange={(event) => updateField('swimmingPool', event.target.checked)}
                   />
                   <span>Swimming pool</span>
+                </label>
+                <label className={styles.checkbox}>
+                  <input
+                    type="checkbox"
+                    checked={formValues.hasFitness}
+                    onChange={(event) => updateField('hasFitness', event.target.checked)}
+                  />
+                  <span>Fitness room</span>
                 </label>
               </div>
             </div>

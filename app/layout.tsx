@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import PWAInstaller from '@/components/PWAInstaller'
 
@@ -87,11 +88,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-title" content="PM Laos" />
         <meta name="msapplication-TileColor" content="#000000" />
         <meta name="msapplication-tap-highlight" content="no" />
-        <script defer src="https://cloud.umami.is/script.js" data-website-id="46824b11-7ff6-4be8-9c6b-b0d30d0e2ec0"></script>
       </head>
       <body className={inter.className}>
         <PWAInstaller />
         {children}
+        <Script defer src="https://cloud.umami.is/script.js" data-website-id="46824b11-7ff6-4be8-9c6b-b0d30d0e2ec0" />
       </body>
     </html>
   )

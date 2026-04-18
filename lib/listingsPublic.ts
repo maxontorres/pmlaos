@@ -18,6 +18,7 @@ export type PublicListing = {
   bathrooms: number | null
   parkingAvailable: boolean
   swimmingPool: boolean
+  hasFitness: boolean
   amenities: string[]
   lat: number | null
   lng: number | null
@@ -38,6 +39,8 @@ export type PublicFilters = {
   maxArea?: number
   minBedrooms?: number
   amenities?: string[]
+  take?: number
+  skip?: number
 }
 
 function mapListing(raw: {
@@ -57,6 +60,7 @@ function mapListing(raw: {
   bathrooms: number | null
   parkingAvailable: boolean
   swimmingPool: boolean
+  hasFitness: boolean
   amenities: string[]
   lat: { toNumber(): number } | number | null
   lng: { toNumber(): number } | number | null
@@ -80,6 +84,7 @@ function mapListing(raw: {
     bathrooms: raw.bathrooms,
     parkingAvailable: raw.parkingAvailable,
     swimmingPool: raw.swimmingPool,
+    hasFitness: raw.hasFitness,
     amenities: raw.amenities,
     lat: raw.lat == null ? null : typeof raw.lat === 'number' ? raw.lat : raw.lat.toNumber(),
     lng: raw.lng == null ? null : typeof raw.lng === 'number' ? raw.lng : raw.lng.toNumber(),
@@ -104,54 +109,72 @@ const LISTING_SELECT = {
   bathrooms: true,
   parkingAvailable: true,
   swimmingPool: true,
+  hasFitness: true,
   amenities: true,
   lat: true,
   lng: true,
   photos: { select: { url: true }, orderBy: { order: 'asc' as const } },
 } as const
 
-export async function getPublicListings(filters: PublicFilters = {}): Promise<PublicListing[]> {
+function buildWhere(filters: Omit<PublicFilters, 'take' | 'skip'>) {
   const { category, transaction, areaSlug, query, minPrice, maxPrice, minArea, maxArea, minBedrooms, amenities } = filters
+  return {
+    status: 'available' as const,
+    ...(category ? { category } : {}),
+    ...(transaction ? { transaction } : {}),
+    ...(areaSlug ? { village: { slug: areaSlug } } : {}),
+    ...(query
+      ? {
+          OR: [
+            { titleEn: { contains: query, mode: 'insensitive' as const } },
+            { village: { nameEn: { contains: query, mode: 'insensitive' as const } } },
+            { descriptionEn: { contains: query, mode: 'insensitive' as const } },
+          ],
+        }
+      : {}),
+    ...(minPrice != null || maxPrice != null
+      ? {
+          price: {
+            ...(minPrice != null ? { gte: minPrice } : {}),
+            ...(maxPrice != null ? { lte: maxPrice } : {}),
+          },
+        }
+      : {}),
+    ...(minArea != null || maxArea != null
+      ? {
+          areaSqm: {
+            ...(minArea != null ? { gte: minArea } : {}),
+            ...(maxArea != null ? { lte: maxArea } : {}),
+          },
+        }
+      : {}),
+    ...(minBedrooms != null ? { bedrooms: { gte: minBedrooms } } : {}),
+    ...(amenities && amenities.length > 0
+      ? {
+          OR: [
+            ...(amenities.includes('gym') ? [{ hasFitness: true }] : []),
+            ...(amenities.includes('pool') ? [{ swimmingPool: true }] : []),
+            ...(amenities.includes('parking') ? [{ parkingAvailable: true }] : []),
+          ],
+        }
+      : {}),
+  }
+}
 
+export async function getPublicListings(filters: PublicFilters = {}): Promise<PublicListing[]> {
+  const { take, skip } = filters
   const rows = await prisma.listing.findMany({
-    where: {
-      status: 'available',
-      ...(category ? { category } : {}),
-      ...(transaction ? { transaction } : {}),
-      ...(areaSlug ? { village: { slug: areaSlug } } : {}),
-      ...(query
-        ? {
-            OR: [
-              { titleEn: { contains: query, mode: 'insensitive' } },
-              { village: { nameEn: { contains: query, mode: 'insensitive' } } },
-              { descriptionEn: { contains: query, mode: 'insensitive' } },
-            ],
-          }
-        : {}),
-      ...(minPrice != null || maxPrice != null
-        ? {
-            price: {
-              ...(minPrice != null ? { gte: minPrice } : {}),
-              ...(maxPrice != null ? { lte: maxPrice } : {}),
-            },
-          }
-        : {}),
-      ...(minArea != null || maxArea != null
-        ? {
-            areaSqm: {
-              ...(minArea != null ? { gte: minArea } : {}),
-              ...(maxArea != null ? { lte: maxArea } : {}),
-            },
-          }
-        : {}),
-      ...(minBedrooms != null ? { bedrooms: { gte: minBedrooms } } : {}),
-      ...(amenities?.length ? { amenities: { hasEvery: amenities } } : {}),
-    },
+    where: buildWhere(filters),
     select: LISTING_SELECT,
     orderBy: { createdAt: 'desc' },
+    ...(take != null ? { take } : {}),
+    ...(skip != null ? { skip } : {}),
   })
-
   return rows.map(mapListing)
+}
+
+export async function getListingsCount(filters: Omit<PublicFilters, 'take' | 'skip'> = {}): Promise<number> {
+  return prisma.listing.count({ where: buildWhere(filters) })
 }
 
 export async function getFeaturedListings(): Promise<PublicListing[]> {

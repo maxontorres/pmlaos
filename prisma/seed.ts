@@ -160,6 +160,7 @@ async function main() {
         bedrooms: listing.bedrooms,
         bathrooms: listing.bathrooms,
         parkingAvailable: listing.parkingAvailable ?? false,
+        hasFitness: false,
         lat: listing.lat,
         lng: listing.lng,
         photos: {
@@ -185,6 +186,7 @@ async function main() {
         bedrooms: listing.bedrooms,
         bathrooms: listing.bathrooms,
         parkingAvailable: listing.parkingAvailable ?? false,
+        hasFitness: false,
         lat: listing.lat,
         lng: listing.lng,
         photos: {

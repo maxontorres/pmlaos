@@ -4,6 +4,7 @@ const STATUS_VALUES = ['available', 'sold', 'rented', 'hidden'] as const
 const PRICE_UNIT_VALUES = ['total', 'per_month'] as const
 
 export type ListingMutationInput = {
+  slug?: string
   category: (typeof CATEGORY_VALUES)[number]
   transaction: (typeof TRANSACTION_VALUES)[number]
   status: (typeof STATUS_VALUES)[number]
@@ -21,6 +22,7 @@ export type ListingMutationInput = {
   bathrooms: number | null
   parkingAvailable: boolean
   swimmingPool: boolean
+  hasFitness: boolean
   lat: string | null
   lng: string | null
   photos: string[]
@@ -193,7 +195,19 @@ export function validateListingPayload(body: unknown): ValidationResult {
   const rawDistrict = body.district
   const district = typeof rawDistrict === 'string' && rawDistrict.trim() ? rawDistrict.trim() : null
 
+  const rawSlug = body.slug
+  let slug: string | undefined
+  if (typeof rawSlug === 'string' && rawSlug.trim()) {
+    const trimmed = rawSlug.trim()
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trimmed)) {
+      fieldErrors.slug = 'Slug must be lowercase letters, numbers, and hyphens only.'
+    } else {
+      slug = trimmed
+    }
+  }
+
   const data: ListingMutationInput = {
+    slug,
     category: getEnumValue(body, 'category', CATEGORY_VALUES, 'Category', fieldErrors),
     transaction: getEnumValue(body, 'transaction', TRANSACTION_VALUES, 'Transaction', fieldErrors),
     status: getEnumValue(body, 'status', STATUS_VALUES, 'Status', fieldErrors),
@@ -211,6 +225,7 @@ export function validateListingPayload(body: unknown): ValidationResult {
     bathrooms: getOptionalInteger(body, 'bathrooms', 'Bathrooms', fieldErrors),
     parkingAvailable: getBooleanValue(body, 'parkingAvailable'),
     swimmingPool: getBooleanValue(body, 'swimmingPool'),
+    hasFitness: getBooleanValue(body, 'hasFitness'),
     lat: getOptionalDecimal(body, 'lat', 'Latitude', fieldErrors),
     lng: getOptionalDecimal(body, 'lng', 'Longitude', fieldErrors),
     photos: getPhotos(body, fieldErrors),
