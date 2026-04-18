@@ -2,6 +2,8 @@
 
 import { FormEvent, useState } from 'react'
 import CloseDealModal from '@/components/admin/CloseDealModal/CloseDealModal'
+import DeleteConfirmModal from '@/components/admin/shared/DeleteConfirmModal'
+import { EyeIcon, EditIcon, TrashIcon } from '@/components/admin/shared/AdminIcons'
 import styles from './ClientsManager.module.css'
 
 type Nationality = string
@@ -114,35 +116,6 @@ function formatBudget(client: ClientRecord) {
 function formatInterest(value: ClientRecord['interestType']) {
   const label = value.replace(/_/g, ' ')
   return label.charAt(0).toUpperCase() + label.slice(1)
-}
-
-function EyeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  )
-}
-
-function EditIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 20h9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="m16.5 3.5 4 4L8 20l-5 1 1-5 12.5-12.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function TrashIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M3 6h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M8 6V4h8v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M19 6l-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M10 11v5M14 11v5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
 }
 
 type Props = {
@@ -786,27 +759,14 @@ export default function ClientsManager({
       ) : null}
 
       {clientPendingDelete ? (
-        <div className={styles.modalOverlay} role="dialog" aria-modal="true" aria-labelledby="delete-client-title">
-          <div className={styles.modalCard}>
-            <p className={styles.modalEyebrow}>Delete client</p>
-            <h2 id="delete-client-title" className={styles.modalTitle}>{clientPendingDelete.name}</h2>
-            <p className={styles.modalText}>
-              This permanently deletes the client from the database. This action cannot be undone.
-            </p>
-            <div className={styles.modalActions}>
-              <button type="button" className={styles.secondaryButton} onClick={closeDeleteModal}>
-                Cancel
-              </button>
-              <button
-                type="button"
-                className={styles.dangerButton}
-                onClick={() => handleDelete(clientPendingDelete)}
-              >
-                Delete client
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmModal
+          title="Delete client"
+          itemName={clientPendingDelete.name}
+          bodyText="This permanently deletes the client from the database. This action cannot be undone."
+          confirmLabel="Delete client"
+          onConfirm={() => handleDelete(clientPendingDelete)}
+          onCancel={closeDeleteModal}
+        />
       ) : null}
     </div>
   )

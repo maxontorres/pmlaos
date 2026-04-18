@@ -1,6 +1,8 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
+import DeleteConfirmModal from '@/components/admin/shared/DeleteConfirmModal'
+import { EyeIcon, EditIcon, TrashIcon } from '@/components/admin/shared/AdminIcons'
 import styles from './DealsManager.module.css'
 
 type Deal = {
@@ -88,35 +90,6 @@ function toFormValues(deal: Deal, clients: ClientOption[], listings: ListingOpti
     closedAt: deal.closedAt,
     notes: deal.notes ?? '',
   }
-}
-
-function EyeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  )
-}
-
-function EditIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 20h9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="m16.5 3.5 4 4L8 20l-5 1 1-5 12.5-12.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function TrashIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M3 6h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M8 6V4h8v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M19 6l-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M10 11v5M14 11v5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
 }
 
 export default function DealsManager({ initialDeals = [], listings = [], clients = [] }: Props) {
@@ -431,25 +404,14 @@ export default function DealsManager({ initialDeals = [], listings = [], clients
       )}
 
       {deleteConfirm && (
-        <div className={styles.modalOverlay} role="dialog" aria-modal="true" aria-labelledby="delete-deal-title">
-          <div className={styles.modalCard}>
-            <p className={styles.modalEyebrow}>Delete deal</p>
-            <h2 id="delete-deal-title" className={styles.modalTitle}>
-              {deleteConfirm.clientName}
-            </h2>
-            <p className={styles.modalText}>
-              This will permanently remove this deal from the list. This action cannot be undone.
-            </p>
-            <div className={styles.modalActions}>
-              <button type="button" className={styles.secondaryButton} onClick={() => setDeleteConfirm(null)}>
-                Cancel
-              </button>
-              <button type="button" className={styles.dangerButton} onClick={() => handleDelete(deleteConfirm)}>
-                Delete deal
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmModal
+          title="Delete deal"
+          itemName={deleteConfirm.clientName}
+          bodyText="This will permanently remove this deal from the list. This action cannot be undone."
+          confirmLabel="Delete deal"
+          onConfirm={() => handleDelete(deleteConfirm)}
+          onCancel={() => setDeleteConfirm(null)}
+        />
       )}
     </div>
   )

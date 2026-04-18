@@ -136,7 +136,7 @@ export default function UsersManager({ initialUsers }: { initialUsers: UserRecor
       if (!res.ok) throw new Error('Failed to update user')
       const updated = await res.json()
       setUsers(prev => sortUsers(prev.map(u => u.id === updated.id ? { ...u, ...updated } : u)))
-    } catch (error) {
+    } catch {
       alert('Failed to update user status')
     }
   }
@@ -150,7 +150,7 @@ export default function UsersManager({ initialUsers }: { initialUsers: UserRecor
       })
       if (!res.ok) throw new Error('Failed to delete user')
       setUsers(prev => prev.filter(u => u.id !== user.id))
-    } catch (error) {
+    } catch {
       alert('Failed to delete user')
     }
   }
@@ -159,33 +159,43 @@ export default function UsersManager({ initialUsers }: { initialUsers: UserRecor
     <div className={styles.stack}>
       <section className={styles.toolbar}>
         <div className={styles.toolbarIntro}>
-          <h1 className={styles.toolbarTitle}>User Management</h1>
-          <p className={styles.toolbarSubtitle}>
-            Manage admin and agent access. Total users: {users.length}
+          <p className={styles.toolbarEyebrow}>Users manager</p>
+          <p className={styles.toolbarText}>
+            {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''} · manage access
           </p>
         </div>
+        <button type="button" onClick={() => openForm()} className={styles.primaryButton}>
+          + Add user
+        </button>
+      </section>
 
-        <div className={styles.toolbarActions}>
-          <div className={styles.searchField}>
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className={styles.input}
-            />
-          </div>
-          <button onClick={() => openForm()} className={styles.btnPrimary}>
-            + Add User
-          </button>
-        </div>
+      <section className={styles.filtersPanel}>
+        <label className={styles.searchField}>
+          <span className={styles.searchLabel}>Search users</span>
+          <input
+            type="search"
+            placeholder="Search by name or email"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className={styles.input}
+          />
+        </label>
       </section>
 
       {isFormOpen && (
         <section className={styles.formPanel}>
-          <h2 className={styles.formTitle}>
-            {editingUser ? 'Edit User' : 'Add New User'}
-          </h2>
+          <div className={styles.formHeader}>
+            <button type="button" onClick={closeForm} className={styles.backButton}>
+              Back
+            </button>
+            <div>
+              <h2 className={styles.formTitle}>
+                {editingUser ? 'Edit user' : 'Add new user'}
+              </h2>
+              <p className={styles.formText}>Manage admin and agent access to the system.</p>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.field}>
               <label className={styles.label}>Name *</label>
@@ -195,6 +205,7 @@ export default function UsersManager({ initialUsers }: { initialUsers: UserRecor
                 value={formValues.name}
                 onChange={e => setFormValues(prev => ({ ...prev, name: e.target.value }))}
                 className={styles.input}
+                placeholder="Full name"
               />
             </div>
 
@@ -207,9 +218,10 @@ export default function UsersManager({ initialUsers }: { initialUsers: UserRecor
                 onChange={e => setFormValues(prev => ({ ...prev, email: e.target.value.toLowerCase() }))}
                 className={styles.input}
                 disabled={!!editingUser}
+                placeholder="email@example.com"
               />
               {editingUser && (
-                <span className={styles.hint}>Email cannot be changed</span>
+                <span className={styles.hint}>Email cannot be changed after creation</span>
               )}
             </div>
 
@@ -222,7 +234,7 @@ export default function UsersManager({ initialUsers }: { initialUsers: UserRecor
                   value={formValues.password}
                   onChange={e => setFormValues(prev => ({ ...prev, password: e.target.value }))}
                   className={styles.input}
-                  placeholder={editingUser ? 'Leave empty to keep current' : ''}
+                  placeholder={editingUser ? 'Leave empty to keep current' : 'Set a password'}
                   style={{ paddingRight: '2.5rem' }}
                 />
                 <button
@@ -262,91 +274,96 @@ export default function UsersManager({ initialUsers }: { initialUsers: UserRecor
               </select>
             </div>
 
-            <div className={styles.checkboxField}>
-              <label className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={formValues.active}
-                  onChange={e => setFormValues(prev => ({ ...prev, active: e.target.checked }))}
-                  className={styles.checkbox}
-                />
-                <span>Active</span>
-              </label>
-            </div>
+            <label className={styles.checkboxField}>
+              <input
+                type="checkbox"
+                checked={formValues.active}
+                onChange={e => setFormValues(prev => ({ ...prev, active: e.target.checked }))}
+                className={styles.checkbox}
+              />
+              <span>Active (can log in)</span>
+            </label>
 
-            <div className={styles.formActions}>
-              <button type="button" onClick={closeForm} className={styles.btnSecondary}>
+            <div className={styles.stickyActions}>
+              <button type="button" onClick={closeForm} className={styles.secondaryButton}>
                 Cancel
               </button>
-              <button type="submit" disabled={isSubmitting} className={styles.btnPrimary}>
-                {isSubmitting ? 'Saving...' : editingUser ? 'Update' : 'Create'}
+              <button type="submit" disabled={isSubmitting} className={styles.primaryButton}>
+                {isSubmitting ? 'Saving...' : editingUser ? 'Save changes' : 'Create user'}
               </button>
             </div>
           </form>
         </section>
       )}
 
-      <section className={styles.recordList}>
-        {filteredUsers.length === 0 && (
-          <div className={styles.emptyCard}>
-            <p>No users found.</p>
-          </div>
-        )}
+      {filteredUsers.length === 0 ? (
+        <article className={styles.emptyCard}>
+          <div className={styles.emptyIcon}>👥</div>
+          <h2 className={styles.emptyTitle}>
+            {users.length === 0 ? 'No users yet' : 'No matching users'}
+          </h2>
+          <p className={styles.emptyText}>
+            {users.length === 0
+              ? 'Create the first user to grant system access.'
+              : 'Try another search term.'}
+          </p>
+        </article>
+      ) : (
+        <section className={styles.recordList}>
+          {filteredUsers.map(user => {
+            const hasGoogleAuth = user.accounts.some(acc => acc.provider === 'google')
+            const hasPassword = user.password !== null
 
-        {filteredUsers.map(user => {
-          const hasGoogleAuth = user.accounts.some(acc => acc.provider === 'google')
-          const hasPassword = user.password !== null
-
-          return (
-            <article key={user.id} className={styles.recordCard}>
-              <div className={styles.recordTop}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  {user.image && (
-                    <img 
-                      src={user.image} 
-                      alt={user.name}
-                      className={styles.avatar}
-                    />
-                  )}
-                  <div>
-                    <h2 className={styles.recordTitle}>{user.name}</h2>
-                    <p className={styles.recordSubtle}>{user.email}</p>
+            return (
+              <article key={user.id} className={styles.recordCard}>
+                <div className={styles.recordTop}>
+                  <div className={styles.recordIdentity}>
+                    {user.image ? (
+                      <img src={user.image} alt={user.name} className={styles.avatar} />
+                    ) : (
+                      <div className={styles.avatarInitials}>
+                        {user.name.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    <div>
+                      <h2 className={styles.recordTitle}>{user.name}</h2>
+                      <p className={styles.recordSubtle}>{user.email}</p>
+                    </div>
+                  </div>
+                  <div className={styles.recordBadgeRow}>
+                    <span className={`${styles.pill} ${user.role === 'admin' ? styles.admin : styles.agent}`}>
+                      {user.role}
+                    </span>
+                    <span className={`${styles.pill} ${user.active ? styles.active : styles.inactive}`}>
+                      {user.active ? 'active' : 'inactive'}
+                    </span>
                   </div>
                 </div>
-                <div className={styles.pills}>
-                  <span className={`${styles.pill} ${user.role === 'admin' ? styles.admin : styles.agent}`}>
-                    {user.role}
-                  </span>
-                  <span className={`${styles.pill} ${user.active ? styles.active : styles.inactive}`}>
-                    {user.active ? 'active' : 'inactive'}
-                  </span>
-                </div>
-              </div>
 
-              <div className={styles.recordMeta}>
-                <span>
+                <p className={styles.authMethod}>
                   Auth: {hasGoogleAuth && hasPassword ? 'Google + Password' : hasGoogleAuth ? 'Google Only' : 'Password Only'}
-                </span>
-              </div>
+                </p>
 
-              <div className={styles.recordActions}>
-                <button onClick={() => openForm(user)} className={styles.btnEdit}>
-                  Edit
-                </button>
-                <button 
-                  onClick={() => handleToggleActive(user)} 
-                  className={styles.btnSecondary}
-                >
-                  {user.active ? 'Deactivate' : 'Activate'}
-                </button>
-                <button onClick={() => handleDelete(user)} className={styles.btnDelete}>
-                  Delete
-                </button>
-              </div>
-            </article>
-          )
-        })}
-      </section>
+                <div className={styles.actionRow}>
+                  <button type="button" onClick={() => openForm(user)} className={`${styles.actionButton} ${styles.editButton}`}>
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleActive(user)}
+                    className={`${styles.actionButton} ${styles.secondaryButton}`}
+                  >
+                    {user.active ? 'Deactivate' : 'Activate'}
+                  </button>
+                  <button type="button" onClick={() => handleDelete(user)} className={`${styles.actionButton} ${styles.dangerButton}`}>
+                    Delete
+                  </button>
+                </div>
+              </article>
+            )
+          })}
+        </section>
+      )}
     </div>
   )
 }

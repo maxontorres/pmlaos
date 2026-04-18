@@ -3,6 +3,8 @@
 import Image from 'next/image'
 import { FormEvent, useCallback, useEffect, useState, useTransition } from 'react'
 import LocationMap from '@/components/shared/LocationMap/LocationMap'
+import DeleteConfirmModal from '@/components/admin/shared/DeleteConfirmModal'
+import { EyeIcon, EditIcon, TrashIcon } from '@/components/admin/shared/AdminIcons'
 import styles from './ListingsManager.module.css'
 
 // Vientiane districts for the District field
@@ -162,35 +164,6 @@ function formatArea(value: string | number | null | undefined) {
   const numericValue = Number(value)
   if (Number.isNaN(numericValue)) return null
   return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(numericValue)} sqm`
-}
-
-function EyeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  )
-}
-
-function EditIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 20h9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="m16.5 3.5 4 4L8 20l-5 1 1-5 12.5-12.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function TrashIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M3 6h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M8 6V4h8v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M19 6l-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M10 11v5M14 11v5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
 }
 
 async function parseApiError(response: Response): Promise<ApiError> {
@@ -1135,31 +1108,26 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
                 </label>
               </div>
 
-              <div className={`${styles.field} ${styles.checkboxField}`} style={{ backgroundColor: '#fff3cd', padding: '16px', borderRadius: '8px', border: '2px solid #ff6b35' }}>
-                <span className={styles.label} style={{ fontSize: '16px', fontWeight: 'bold', color: '#d63384' }}>🎯 SPONSORED (Premium Homepage)</span>
+              <div className={`${styles.field} ${styles.sponsoredField}`}>
+                <span className={styles.label}>🎯 Sponsored (Premium Homepage)</span>
                 <label className={styles.checkbox}>
                   <input
                     type="checkbox"
                     checked={formValues.sponsored}
                     onChange={(event) => updateField('sponsored', event.target.checked)}
                   />
-                  <span style={{ fontWeight: 'bold' }}>Display as SPONSORED banner on homepage</span>
+                  <span>Display as sponsored banner on homepage</span>
                 </label>
                 {formValues.sponsored && (
-                  <div style={{ marginTop: '12px' }}>
-                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: '500' }}>
-                      Sponsored Until (optional):
-                    </label>
+                  <div className={styles.sponsoredDateRow}>
+                    <label className={styles.label}>Sponsored Until (optional)</label>
                     <input
                       type="date"
                       className={styles.input}
                       value={formValues.sponsoredUntil}
                       onChange={(event) => updateField('sponsoredUntil', event.target.value)}
-                      style={{ maxWidth: '200px' }}
                     />
-                    <p style={{ fontSize: '12px', color: '#6c757d', marginTop: '4px' }}>
-                      Leave empty for unlimited. Most recent sponsored listing will be shown.
-                    </p>
+                    <span className={styles.helpText}>Leave empty for unlimited. Most recent sponsored listing will be shown.</span>
                   </div>
                 )}
               </div>
@@ -1336,28 +1304,15 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
       )}
 
       {listingPendingDelete ? (
-        <div className={styles.modalOverlay} role="dialog" aria-modal="true" aria-labelledby="delete-listing-title">
-          <div className={styles.modalCard}>
-            <p className={styles.modalEyebrow}>Delete listing</p>
-            <h2 id="delete-listing-title" className={styles.modalTitle}>{listingPendingDelete.titleEn}</h2>
-            <p className={styles.modalText}>
-              This will remove the listing from the current admin list preview. This action cannot be undone.
-            </p>
-            <div className={styles.modalActions}>
-              <button type="button" className={styles.secondaryButton} onClick={closeDeleteModal} disabled={isPending}>
-                Cancel
-              </button>
-              <button
-                type="button"
-                className={styles.dangerButton}
-                onClick={() => handleDelete(listingPendingDelete)}
-                disabled={isPending}
-              >
-                {isPending ? 'Deleting...' : 'Delete listing'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmModal
+          title="Delete listing"
+          itemName={listingPendingDelete.titleEn}
+          bodyText="This will permanently remove the listing. This action cannot be undone."
+          confirmLabel="Delete listing"
+          loading={isPending}
+          onConfirm={() => handleDelete(listingPendingDelete)}
+          onCancel={closeDeleteModal}
+        />
       ) : null}
     </div>
   )

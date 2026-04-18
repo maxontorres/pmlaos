@@ -31,9 +31,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user, account, profile }) {
       if (account?.provider === 'google') {
+        console.log('🔍 Google sign-in attempt:', { email: user.email, image: user.image });
+        
         const existingUser = await prisma.user.findUnique({
           where: { email: user.email!.toLowerCase() },
         })
+        
+        console.log('📝 Existing user found:', { id: existingUser?.id, currentImage: existingUser?.image });
         
         if (!existingUser) {
           return '/admin/login?error=unauthorized'
@@ -41,6 +45,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         
         if (!existingUser.active) {
           return '/admin/login?error=inactive'
+        }
+
+        // Update user image from Google profile
+        const googleImage = (profile as { picture?: string })?.picture ?? user.image
+        if (googleImage && googleImage !== existingUser.image) {
+          console.log('✅ Updating user image:', { from: existingUser.image, to: googleImage });
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: { image: googleImage },
+          })
+        } else {
+          console.log('⏭️ Skipping image update:', { googleImage, dbImage: existingUser.image });
         }
 
         // Check if Account link exists, if not create it
@@ -74,13 +90,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true
     },
     async jwt({ token, user }) {
-      if (user) {
-        token.role = (user as { role: string }).role
-        if (user.image) token.picture = user.image
-      } else if (token.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: token.email.toLowerCase() },
-        })
+      const emailKey = (user?.email || token.email)?.toLowerCase()
+      if (emailKey) {
+        const dbUser = await prisma.user.findUnique({ where: { email: emailKey } })
         if (dbUser) {
           token.role = dbUser.role
           if (dbUser.image) token.picture = dbUser.image
