@@ -161,7 +161,10 @@ function formatMoney(value: string | number, priceUnit: string) {
     maximumFractionDigits: 0,
   }).format(amount)
 
-  return priceUnit === 'per_month' ? `${formatted} / month` : formatted
+  if (priceUnit === 'per_month') return `${formatted} / month`
+  if (priceUnit === 'per_six_months') return `${formatted} / 6 months`
+  if (priceUnit === 'per_year') return `${formatted} / year`
+  return formatted
 }
 
 function capitalize(value: string) {
@@ -966,7 +969,16 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
             <div className={styles.grid}>
               <div className={styles.field}>
                 <span className={styles.label}>Price (USD)</span>
-                <div className={styles.readonlyValue}>{formValues.price ? `${formValues.price} ${formValues.priceUnit === 'per_month' ? '/ month' : ''}` : '—'}</div>
+                <div className={styles.readonlyValue}>
+                  {formValues.price 
+                    ? `${formValues.price} ${
+                        formValues.priceUnit === 'per_month' ? '/ month' 
+                        : formValues.priceUnit === 'per_six_months' ? '/ 6 months' 
+                        : formValues.priceUnit === 'per_year' ? '/ year' 
+                        : ''
+                      }` 
+                    : '—'}
+                </div>
               </div>
             </div>
 
@@ -1232,6 +1244,8 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
                 <select className={styles.select} value={formValues.priceUnit} onChange={(event) => updateField('priceUnit', event.target.value)}>
                   <option value="total">Total</option>
                   <option value="per_month">Per month</option>
+                  <option value="per_six_months">Per 6 months</option>
+                  <option value="per_year">Per year</option>
                 </select>
                 {fieldErrors.priceUnit ? <span className={styles.fieldError}>{fieldErrors.priceUnit}</span> : null}
               </label>

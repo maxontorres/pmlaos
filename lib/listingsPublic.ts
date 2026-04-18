@@ -12,7 +12,7 @@ export type PublicListing = {
   villageName: string | null
   descriptionEn: string
   price: number
-  priceUnit: 'total' | 'per_month'
+  priceUnit: 'total' | 'per_month' | 'per_six_months' | 'per_year'
   areaSqm: number | null
   bedrooms: number | null
   bathrooms: number | null
@@ -220,11 +220,15 @@ export async function getAllPublicSlugs(): Promise<string[]> {
   return rows.map((r) => r.slug)
 }
 
-export function formatPrice(price: number, priceUnit: 'total' | 'per_month'): string {
+export function formatPrice(price: number, priceUnit: 'total' | 'per_month' | 'per_six_months' | 'per_year'): string {
   const formatted = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
   }).format(price)
-  return priceUnit === 'per_month' ? `${formatted}/mo` : formatted
+  
+  if (priceUnit === 'per_month') return `${formatted}/mo`
+  if (priceUnit === 'per_six_months') return `${formatted}/6mo`
+  if (priceUnit === 'per_year') return `${formatted}/yr`
+  return formatted
 }

@@ -94,6 +94,8 @@
     "area": "Area",
     "sqm": "sqm",
     "perMonth": "/ month",
+    "perSixMonths": "/ 6 months",
+    "perYear": "/ year",
     "location": "Location",
     "keyFacts": "Key facts",
     "amenities": "Amenities",
