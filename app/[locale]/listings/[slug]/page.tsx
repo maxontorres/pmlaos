@@ -109,6 +109,9 @@ export default async function ListingDetailPage({
     listing.areaSqm
       ? { label: t('listing.area'), value: `${listing.areaSqm} ${t('listing.sqm')}`, icon: '📐' }
       : null,
+    listing.district
+      ? { label: t('listing.district'), value: listing.district.charAt(0).toUpperCase() + listing.district.slice(1), icon: '🗺️' }
+      : null,
     { label: t('listing.location'), value: listing.villageName ?? '', icon: '📍' },
   ].filter((item): item is { label: string; value: string; icon: string } => item !== null)
 
@@ -189,6 +192,12 @@ export default async function ListingDetailPage({
             <span className={styles.price}>{formatPrice(listing.price, listing.priceUnit)}</span>
             <span className={styles.metaDivider} />
             <span className={styles.metaItem}>{listing.villageName}</span>
+            {listing.district && (
+              <>
+                <span className={styles.metaDivider} />
+                <span className={styles.metaItem}>{listing.district.charAt(0).toUpperCase() + listing.district.slice(1)}</span>
+              </>
+            )}
             {primaryAreaSqm && (
               <>
                 <span className={styles.metaDivider} />

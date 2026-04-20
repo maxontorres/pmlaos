@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { jsonError, validateListingPayload } from '@/lib/listingForm'
 import { prisma } from '@/lib/prisma'
+import { deleteCloudinaryImages } from '@/lib/cloudinary'
 
 export async function GET(
   _req: NextRequest,
@@ -50,6 +51,11 @@ export async function PUT(
       return jsonError('Please correct the highlighted fields.', 409, { slug: 'This slug is already in use.' })
     }
   }
+
+  // Delete removed photos from Cloudinary before updating the DB
+  const existing = await prisma.photo.findMany({ where: { listingId: id }, select: { url: true } })
+  const removedUrls = existing.map((p) => p.url).filter((url) => !data.photos.includes(url))
+  await deleteCloudinaryImages(removedUrls)
 
   try {
     const listing = await prisma.listing.update({
@@ -108,6 +114,8 @@ export async function DELETE(
 
   const { id } = await params
   try {
+    const photos = await prisma.photo.findMany({ where: { listingId: id }, select: { url: true } })
+    await deleteCloudinaryImages(photos.map((p) => p.url))
     await prisma.listing.delete({ where: { id } })
     return NextResponse.json({ ok: true })
   } catch (err) {

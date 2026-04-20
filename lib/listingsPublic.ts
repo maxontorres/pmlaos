@@ -10,6 +10,7 @@ export type PublicListing = {
   featured: boolean
   titleEn: string
   villageName: string | null
+  district: string | null
   descriptionEn: string
   price: number
   priceUnit: 'total' | 'per_month' | 'per_six_months' | 'per_year'
@@ -47,6 +48,7 @@ function mapListing(raw: {
   id: string
   slug: string
   village: { slug: string; nameEn: string } | null
+  district: string | null
   category: string
   transaction: string
   status: string
@@ -76,6 +78,7 @@ function mapListing(raw: {
     featured: raw.featured,
     titleEn: raw.titleEn,
     villageName: raw.village?.nameEn ?? null,
+    district: raw.district,
     descriptionEn: raw.descriptionEn,
     price: typeof raw.price === 'number' ? raw.price : raw.price.toNumber(),
     priceUnit: raw.priceUnit as PublicListing['priceUnit'],
@@ -96,6 +99,7 @@ const LISTING_SELECT = {
   id: true,
   slug: true,
   village: { select: { slug: true, nameEn: true } },
+  district: true,
   category: true,
   transaction: true,
   status: true,
