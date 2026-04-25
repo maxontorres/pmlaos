@@ -216,6 +216,7 @@ export default async function ListingsPage({
     { key: 'house',     cat: 'house',       label: t('listings.filterHouse') },
     { key: 'apartment', cat: 'apartment',   label: t('listings.filterApartment') },
     { key: 'land',      cat: 'land',        label: t('listings.filterLand') },
+    { key: 'hotel',     cat: 'hotel',       label: t('listings.filterHotel') },
   ]
 
   const categoryPills = CATEGORY_PILLS
@@ -249,7 +250,7 @@ export default async function ListingsPage({
         slug: listing.slug,
         title: listing.titleEn,
         areaLabel: listing.areaSlug || '',
-        href: `${buildListingsHref(locale, { transaction, category, query, areaSlug, selected: listing.slug, ...adv })}#listing-${listing.slug}`,
+        href: `/${locale}/listings/${listing.slug}`,
         active: listing.slug === selectedListing?.slug,
         lat,
         lng,

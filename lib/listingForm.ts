@@ -1,7 +1,7 @@
-const CATEGORY_VALUES = ['house', 'apartment', 'land'] as const
+const CATEGORY_VALUES = ['house', 'apartment', 'land', 'hotel'] as const
 const TRANSACTION_VALUES = ['sale', 'rent'] as const
 const STATUS_VALUES = ['available', 'sold', 'rented', 'hidden'] as const
-const PRICE_UNIT_VALUES = ['total', 'per_month', 'per_six_months', 'per_year'] as const
+const PRICE_UNIT_VALUES = ['total', 'per_day', 'per_week', 'per_month', 'per_three_months', 'per_six_months', 'per_year'] as const
 
 export type ListingMutationInput = {
   slug?: string

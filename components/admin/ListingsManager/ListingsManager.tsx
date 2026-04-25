@@ -161,7 +161,10 @@ function formatMoney(value: string | number, priceUnit: string) {
     maximumFractionDigits: 0,
   }).format(amount)
 
+  if (priceUnit === 'per_day') return `${formatted} / day`
+  if (priceUnit === 'per_week') return `${formatted} / week`
   if (priceUnit === 'per_month') return `${formatted} / month`
+  if (priceUnit === 'per_three_months') return `${formatted} / 3 months`
   if (priceUnit === 'per_six_months') return `${formatted} / 6 months`
   if (priceUnit === 'per_year') return `${formatted} / year`
   return formatted
@@ -972,9 +975,12 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
                 <div className={styles.readonlyValue}>
                   {formValues.price 
                     ? `${formValues.price} ${
-                        formValues.priceUnit === 'per_month' ? '/ month' 
-                        : formValues.priceUnit === 'per_six_months' ? '/ 6 months' 
-                        : formValues.priceUnit === 'per_year' ? '/ year' 
+                        formValues.priceUnit === 'per_day' ? '/ day'
+                        : formValues.priceUnit === 'per_week' ? '/ week'
+                        : formValues.priceUnit === 'per_month' ? '/ month'
+                        : formValues.priceUnit === 'per_three_months' ? '/ 3 months'
+                        : formValues.priceUnit === 'per_six_months' ? '/ 6 months'
+                        : formValues.priceUnit === 'per_year' ? '/ year'
                         : ''
                       }` 
                     : '—'}
@@ -1122,6 +1128,7 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
                   <option value="house">House</option>
                   <option value="apartment">Apartment</option>
                   <option value="land">Land</option>
+                  <option value="hotel">Hotel</option>
                 </select>
                 {fieldErrors.category ? <span className={styles.fieldError}>{fieldErrors.category}</span> : null}
               </label>
@@ -1243,7 +1250,10 @@ export default function ListingsManager({ canDelete, initialListings = [], useLo
                 <span className={styles.label}>Price unit</span>
                 <select className={styles.select} value={formValues.priceUnit} onChange={(event) => updateField('priceUnit', event.target.value)}>
                   <option value="total">Total</option>
+                  <option value="per_day">Per day</option>
+                  <option value="per_week">Per week</option>
                   <option value="per_month">Per month</option>
+                  <option value="per_three_months">Per 3 months</option>
                   <option value="per_six_months">Per 6 months</option>
                   <option value="per_year">Per year</option>
                 </select>

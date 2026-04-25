@@ -4,7 +4,7 @@ export type PublicListing = {
   id: string
   slug: string
   areaSlug: string | null
-  category: 'house' | 'apartment' | 'land'
+  category: 'house' | 'apartment' | 'land' | 'hotel'
   transaction: 'sale' | 'rent'
   status: 'available' | 'sold' | 'rented' | 'hidden'
   featured: boolean
@@ -13,7 +13,7 @@ export type PublicListing = {
   district: string | null
   descriptionEn: string
   price: number
-  priceUnit: 'total' | 'per_month' | 'per_six_months' | 'per_year'
+  priceUnit: 'total' | 'per_day' | 'per_week' | 'per_month' | 'per_three_months' | 'per_six_months' | 'per_year'
   areaSqm: number | null
   bedrooms: number | null
   bathrooms: number | null
@@ -26,7 +26,7 @@ export type PublicListing = {
   photos: string[]
 }
 
-export type PropertyCategory = 'house' | 'apartment' | 'land'
+export type PropertyCategory = 'house' | 'apartment' | 'land' | 'hotel'
 export type TransactionType = 'sale' | 'rent'
 
 export type PublicFilters = {
@@ -224,14 +224,17 @@ export async function getAllPublicSlugs(): Promise<string[]> {
   return rows.map((r) => r.slug)
 }
 
-export function formatPrice(price: number, priceUnit: 'total' | 'per_month' | 'per_six_months' | 'per_year'): string {
+export function formatPrice(price: number, priceUnit: 'total' | 'per_day' | 'per_week' | 'per_month' | 'per_three_months' | 'per_six_months' | 'per_year'): string {
   const formatted = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
   }).format(price)
-  
+
+  if (priceUnit === 'per_day') return `${formatted}/day`
+  if (priceUnit === 'per_week') return `${formatted}/wk`
   if (priceUnit === 'per_month') return `${formatted}/mo`
+  if (priceUnit === 'per_three_months') return `${formatted}/3mo`
   if (priceUnit === 'per_six_months') return `${formatted}/6mo`
   if (priceUnit === 'per_year') return `${formatted}/yr`
   return formatted

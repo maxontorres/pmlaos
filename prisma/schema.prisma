@@ -17,6 +17,7 @@ enum PropertyCategory {
   house
   apartment
   land
+  hotel
 }
 
 enum TransactionType {
@@ -33,7 +34,10 @@ enum ListingStatus {
 
 enum PriceUnit {
   total
+  per_day
+  per_week
   per_month
+  per_three_months
   per_six_months
   per_year
 }

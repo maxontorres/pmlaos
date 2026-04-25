@@ -18,6 +18,7 @@ export default function ListingCard({ listing, locale, typeLabel, areaLabel, sqm
 
   const badgeClass =
     category === 'land' ? styles.badge_land
+    : category === 'hotel' ? styles.badge_hotel
     : transaction === 'rent' ? styles.badge_rent
     : styles.badge_sale
 

@@ -71,6 +71,11 @@
   color: var(--color-white);
 }
 
+.badge_hotel {
+  background: #B45309;
+  color: var(--color-white);
+}
+
 .body {
   padding: 1rem 1.25rem 1.25rem;
   display: flex;
