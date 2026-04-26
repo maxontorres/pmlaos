@@ -11,6 +11,7 @@ const notoSansLao = Noto_Sans_Lao({
   subsets: ['lao'],
   weight: ['400', '600', '700'],
   display: 'swap',
+  preload: false,
 })
 
 export function generateStaticParams() {

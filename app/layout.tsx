@@ -114,7 +114,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.className}>
         <PWAInstaller />
         {children}
-        <Script defer src="https://cloud.umami.is/script.js" data-website-id="46824b11-7ff6-4be8-9c6b-b0d30d0e2ec0" />
+        <Script strategy="lazyOnload" src="https://cloud.umami.is/script.js" data-website-id="46824b11-7ff6-4be8-9c6b-b0d30d0e2ec0" />
       </body>
     </html>
   )
